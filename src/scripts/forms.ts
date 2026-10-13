@@ -19,6 +19,12 @@ for (const form of document.querySelectorAll<HTMLFormElement>('form[data-enhance
     const input = form.querySelector<HTMLInputElement>(`input[name="leistungen"][value="${CSS.escape(preset)}"]`);
     if (input) input.checked = true;
   }
+  // Values handed over from the price calculator (flaeche_m2, turnus, plz).
+  for (const name of ['flaeche_m2', 'turnus', 'plz']) {
+    const v = params.get(name);
+    const field = form.querySelector<HTMLInputElement | HTMLSelectElement>(`[name="${name}"]`);
+    if (v && field) field.value = v;
+  }
   const fehler = params.get('fehler');
   if (fehler) showErrors([fehler]);
 

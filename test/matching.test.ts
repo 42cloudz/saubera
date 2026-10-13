@@ -16,3 +16,14 @@ test('matches by region and service, best first', () => {
   const ids = match({ plz: '22767', leistungen: ['bueroreinigung', 'glasreinigung'] }, providers).map((x) => x.id);
   assert.deepEqual(ids, [2, 5, 1]);
 });
+
+import { richtpreis, spanneText } from '../src/lib/preise.ts';
+
+test('richtpreis: monthly range for recurring, one-time otherwise', () => {
+  const l = { preis: { min: 0.1, max: 0.2, einheit: 'm²' as const } };
+  const m = richtpreis(l, 400, 'Wöchentlich')!;
+  assert.equal(m.proMonat, true);
+  assert.equal(spanneText(m), '170 € – 350 € im Monat');
+  assert.equal(spanneText(richtpreis(l, 400, 'Einmalig')!), '40 € – 80 € einmalig');
+  assert.equal(richtpreis(l, 0, 'Wöchentlich'), null);
+});

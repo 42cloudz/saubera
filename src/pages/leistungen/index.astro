@@ -1,18 +1,18 @@
 ---
 import Base from '../../layouts/Base.astro';
-import ServiceGrid from '../../components/ServiceGrid.astro';
+import PriceTable from '../../components/PriceTable.astro';
 import CtaBand from '../../components/CtaBand.astro';
 ---
-<Base title="Reinigungsleistungen für Unternehmen" description="Büro-, Praxis-, Glas-, Fassaden-, Industrie-, Bau-, Hotel-, Teppich-, Photovoltaik- und Fahrzeugreinigung: alle Reinigungsleistungen für Unternehmen über ein Portal.">
+<Base title="Reinigungsleistungen für Unternehmen" description="Büro-, Praxis-, Glas-, Fassaden-, Industrie-, Bau-, Hotel-, Teppich-, Photovoltaik- und Fahrzeugreinigung mit Richtpreisen: alle Reinigungsleistungen für Unternehmen über ein Portal.">
   <section class="page-head">
     <div class="wrap">
       <div class="crumbs"><a href="/">Start</a> / Leistungen</div>
-      <h1>Reinigungsleistungen für Ihr Unternehmen</h1>
-      <p class="lead">Alles, was sichtbar ist, wird irgendwann schmutzig. Über Saubera finden Sie für jede Fläche den passenden Fachbetrieb, außer für öffentliche Flächen.</p>
+      <h1>Reinigungsleistungen und Richtpreise</h1>
+      <p class="lead">Alles, was sichtbar ist, wird irgendwann schmutzig. Über Saubera finden Sie für jede gewerbliche Fläche den passenden Fachbetrieb.</p>
     </div>
   </section>
   <section class="section">
-    <div class="wrap"><ServiceGrid /></div>
+    <div class="wrap"><PriceTable /></div>
   </section>
-  <CtaBand title="Mehrere Leistungen, ein Ansprechpartner" text="Kombinieren Sie zum Beispiel Unterhalts- und Glasreinigung in einer Anfrage." />
+  <CtaBand title="Mehrere Leistungen, eine Anfrage" text="Kombinieren Sie zum Beispiel Unterhalts- und Glasreinigung in einer Ausschreibung." />
 </Base>

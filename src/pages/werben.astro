@@ -1,6 +1,5 @@
 ---
 import Base from '../layouts/Base.astro';
-import Icon from '../components/Icon.astro';
 import CtaBand from '../components/CtaBand.astro';
 ---
 <Base title="Werben auf Saubera" description="Premium-Platzierung und Anzeigen für Reinigungsfirmen und Anbieter von Reinigungsbedarf: sichtbar bei Unternehmen, die gerade eine Reinigung suchen.">
@@ -12,28 +11,16 @@ import CtaBand from '../components/CtaBand.astro';
     </div>
   </section>
   <section class="section">
-    <div class="wrap">
-      <div class="grid grid-3">
-        <div class="card">
-          <Icon name="star" class="icon" />
-          <h3>Premium-Partner</h3>
-          <p>Ihr Profil erscheint bei passenden Ausschreibungen weiter oben und mit Hervorhebung. Für Reinigungsfirmen, die schneller wachsen wollen.</p>
-          <ul class="check-list mt-m"><li>Hervorgehobenes Profil</li><li>Vorrang bei gleicher Eignung</li><li>Logo und Referenzen</li></ul>
-        </div>
-        <div class="card">
-          <Icon name="megaphone" class="icon" />
-          <h3>Anzeige auf Leistungsseiten</h3>
-          <p>Feste Platzierung auf einer Leistungsseite, zum Beispiel Glasreinigung oder Industriereinigung, bundesweit oder nach Region.</p>
-          <ul class="check-list mt-m"><li>Als Anzeige gekennzeichnet</li><li>Nach Leistung und Region</li><li>Monatlich kündbar</li></ul>
-        </div>
-        <div class="card">
-          <Icon name="building" class="icon" />
-          <h3>Für Hersteller und Handel</h3>
-          <p>Reinigungsmittel, Maschinen, Arbeitskleidung oder Software für Gebäudedienstleister: Erreichen Sie Reinigungsfirmen und Facility-Verantwortliche.</p>
-          <ul class="check-list mt-m"><li>Partnerbereich der Reinigungsfirmen</li><li>Ratgeber-Sponsoring</li><li>Individuelle Pakete</li></ul>
-        </div>
+    <div class="wrap editorial">
+      <h2>Drei Wege, sichtbar zu werden</h2>
+      <div class="editorial-body">
+        <dl class="facts">
+          <dt>Premium-Partner</dt><dd>Für Reinigungsfirmen: Ihr Profil erscheint bei passenden Ausschreibungen weiter oben und hervorgehoben, mit Logo und Referenzen. Bei gleicher Eignung haben Sie Vorrang.</dd>
+          <dt>Anzeige auf Leistungsseiten</dt><dd>Eine feste, als Anzeige gekennzeichnete Platzierung auf einer Leistungsseite wie Glas- oder Industriereinigung, bundesweit oder nach Region. Monatlich kündbar.</dd>
+          <dt>Hersteller und Handel</dt><dd>Reinigungsmittel, Maschinen, Arbeitskleidung oder Software für Gebäudedienstleister: Sie erreichen Reinigungsfirmen im Partnerbereich und Facility-Verantwortliche über Ratgeber-Sponsoring.</dd>
+        </dl>
+        <p>Preise und freie Plätze nennen wir Ihnen persönlich. Registrieren Sie sich als Partner und kreuzen Sie „Premium-Platzierung“ an, oder fragen Sie als Hersteller direkt an.</p>
       </div>
-      <p class="lead center mt-l">Preise und Verfügbarkeit nennen wir Ihnen gern persönlich. Registrieren Sie sich als Partner und kreuzen Sie „Premium-Platzierung“ an, oder fragen Sie als Hersteller direkt an.</p>
     </div>
   </section>
   <CtaBand title="Interesse an einer Platzierung?" text="Wir melden uns mit Preisen und freien Plätzen in Ihrer Region." href="/dienstleister/registrieren" label="Als Partner anfragen" />

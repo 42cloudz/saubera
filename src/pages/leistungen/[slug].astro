@@ -1,15 +1,16 @@
 ---
 import Base from '../../layouts/Base.astro';
-import Icon from '../../components/Icon.astro';
 import CtaBand from '../../components/CtaBand.astro';
 import AdSlot from '../../components/AdSlot.astro';
+import PriceCalc from '../../components/PriceCalc.astro';
 import { leistungen, type Leistung } from '../../data/leistungen.ts';
+import { einheitspreis } from '../../lib/preise.ts';
 
 export function getStaticPaths() {
   return leistungen.map((l) => ({ params: { slug: l.slug }, props: { l } }));
 }
 const { l } = Astro.props as { l: Leistung };
-const others = leistungen.filter((o) => o.slug !== l.slug).slice(0, 4);
+const others = leistungen.filter((o) => o.slug !== l.slug);
 const ld = {
   '@context': 'https://schema.org',
   '@type': 'Service',
@@ -20,49 +21,33 @@ const ld = {
   audience: { '@type': 'BusinessAudience' },
 };
 ---
-<Base title={`${l.name} für Unternehmen`} description={`${l.name} für Gewerbe: ${l.kurz} Vergleichbare Angebote geprüfter Fachbetriebe über Saubera, für Auftraggeber kostenlos.`} jsonLd={ld}>
-  <section class="page-head">
+<Base title={`${l.name} für Unternehmen: Kosten und Angebote`} description={`${l.name} für Gewerbe: ${l.kurz} Richtpreis ${einheitspreis(l)}. Vergleichbare Angebote geprüfter Fachbetriebe über Saubera.`} jsonLd={ld}>
+  <section class="hero hero-sub">
     <div class="wrap">
-      <div class="crumbs"><a href="/">Start</a> / <a href="/leistungen">Leistungen</a> / {l.name}</div>
-      <h1>{l.name} für Unternehmen</h1>
-      <p class="lead">{l.kurz}</p>
-      <div class="btn-row mt-m"><a class="btn btn-primary" href={`/anfrage?leistung=${l.slug}`}>Angebote für {l.name} anfragen</a></div>
+      <div class="crumbs crumbs-dark"><a href="/">Start</a> / <a href="/leistungen">Leistungen</a> / {l.name}</div>
+      <h1>{l.name}</h1>
+      <p class="lead">{l.kurz} Richtpreis: {einheitspreis(l)} und Einsatz.</p>
+      <PriceCalc slug={l.slug} />
     </div>
   </section>
   <section class="section">
-    <div class="wrap split">
-      <div class="prose">
-        <h2>Worum es geht</h2>
+    <div class="wrap editorial">
+      <h2>Worum es geht</h2>
+      <div class="editorial-body">
         <p>{l.text}</p>
-        <h3>Typischer Leistungsumfang</h3>
-        <ul class="check-list">{l.umfang.map((u) => <li>{u}</li>)}</ul>
-        <h3>Üblicher Turnus</h3>
-        <p>{l.turnus}</p>
-      </div>
-      <div class="card">
-        <Icon name={l.icon} class="icon" />
-        <h3>Geeignet für</h3>
-        <ul class="tags">{l.objekte.map((o) => <li>{o}</li>)}</ul>
-        <hr class="mt-m" />
-        <h3 class="mt-m">So läuft es über Saubera</h3>
-        <ul class="check-list">
-          <li>Leistungsverzeichnis in zwei Minuten anlegen</li>
-          <li>Angebote geprüfter Betriebe aus Ihrer Region</li>
-          <li>Leistungsnachweis und Bewertung pro Einsatz</li>
-          <li>Vertretung, wenn das Team ausfällt</li>
-        </ul>
+        <dl class="facts">
+          <dt>Leistungsumfang</dt><dd>{l.umfang.join(', ')}.</dd>
+          <dt>Üblicher Turnus</dt><dd>{l.turnus}</dd>
+          <dt>Geeignet für</dt><dd>{l.objekte.join(', ')}</dd>
+        </dl>
       </div>
     </div>
     <div class="wrap mt-l"><AdSlot context={l.name} /></div>
   </section>
   <section class="section section-soft">
-    <div class="wrap">
+    <div class="wrap editorial">
       <h2>Weitere Leistungen</h2>
-      <div class="grid grid-4 mt-m">
-        {others.map((o) => (
-          <a class="card card-link" href={`/leistungen/${o.slug}`}><Icon name={o.icon} class="icon" /><h3>{o.name}</h3><p>{o.kurz}</p></a>
-        ))}
-      </div>
+      <ul class="link-list editorial-body">{others.map((o) => <li><a href={`/leistungen/${o.slug}`}>{o.name}</a> <span>{einheitspreis(o)}</span></li>)}</ul>
     </div>
   </section>
   <CtaBand href={`/anfrage?leistung=${l.slug}`} />

@@ -1,0 +1,42 @@
+---
+// Richtpreis-Rechner. Ohne JavaScript ist er ein normales Formular, das die Anfrage vorausfüllt;
+// mit JavaScript (src/scripts/preisrechner.ts) zeigt er die Spanne live.
+import { leistungen, leistungBySlug, turnusOptionen } from '../data/leistungen.ts';
+import { richtpreis, spanneText } from '../lib/preise.ts';
+
+interface Props { slug?: string; menge?: number; dark?: boolean }
+const l = leistungBySlug.get(Astro.props.slug ?? 'bueroreinigung') ?? leistungen[0];
+const menge = Astro.props.menge ?? (l.preis.einheit === 'Fahrzeug' ? 10 : 400);
+const start = richtpreis(l, menge, l.standardTurnus);
+const daten = Object.fromEntries(leistungen.map((x) => [x.slug, { preis: x.preis, turnus: x.standardTurnus }]));
+---
+<form class:list={['calc', { 'calc-dark': Astro.props.dark }]} method="get" action="/anfrage" data-preise={JSON.stringify(daten)}>
+  <div class="calc-fields">
+    <div class="calc-field calc-wide">
+      <label for="calc-leistung">Was soll gereinigt werden?</label>
+      <select id="calc-leistung" name="leistung">
+        {leistungen.map((x) => <option value={x.slug} selected={x.slug === l.slug}>{x.name}</option>)}
+      </select>
+    </div>
+    <div class="calc-field">
+      <label for="calc-menge" data-label-m2="Fläche in m²" data-label-fahrzeug="Anzahl Fahrzeuge">{l.preis.einheit === 'Fahrzeug' ? 'Anzahl Fahrzeuge' : 'Fläche in m²'}</label>
+      <input id="calc-menge" name="flaeche_m2" type="number" min="1" inputmode="numeric" value={menge} />
+    </div>
+    <div class="calc-field">
+      <label for="calc-turnus">Wie oft?</label>
+      <select id="calc-turnus" name="turnus">
+        {turnusOptionen.map((t) => <option selected={t === l.standardTurnus}>{t}</option>)}
+      </select>
+    </div>
+    <div class="calc-field">
+      <label for="calc-plz">PLZ</label>
+      <input id="calc-plz" name="plz" type="text" inputmode="numeric" maxlength="5" pattern="\d{5}" placeholder="z. B. 22767" />
+    </div>
+  </div>
+  <div class="calc-result">
+    <p><span class="calc-label">Richtpreis netto</span> <output id="calc-out" for="calc-leistung calc-menge calc-turnus">{start ? spanneText(start) : '–'}</output></p>
+    <button class="btn btn-primary" type="submit">Echte Angebote dazu anfordern</button>
+  </div>
+  <p class="calc-note">Grobe Marktwerte 2026 ohne Gewähr. Den echten Preis kalkulieren die Reinigungsfirmen nach Ihrem Leistungsverzeichnis.</p>
+</form>
+<script>import '../scripts/preisrechner.ts';</script>

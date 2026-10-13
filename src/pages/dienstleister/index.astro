@@ -1,6 +1,5 @@
 ---
 import Base from '../../layouts/Base.astro';
-import Icon from '../../components/Icon.astro';
 import CtaBand from '../../components/CtaBand.astro';
 import Faq from '../../components/Faq.astro';
 
@@ -15,40 +14,43 @@ const faq = [
   <section class="page-head">
     <div class="wrap">
       <div class="crumbs"><a href="/">Start</a> / Für Reinigungsfirmen</div>
-      <h1>Mehr Gewerbekunden, ohne für Leads zu bezahlen</h1>
-      <p class="lead">Saubera bringt Sie mit Unternehmen zusammen, die eine Reinigungsfirma suchen. Kostenlos registrieren, passende Anfragen erhalten, gute Arbeit sichtbar machen.</p>
+      <h1>Gewerbekunden gewinnen, ohne für Leads zu bezahlen</h1>
+      <p class="lead">Registrieren Sie sich kostenlos und bekommen Sie Ausschreibungen, die zu Ihren Leistungen und Ihrem Gebiet passen.</p>
       <div class="btn-row mt-m"><a class="btn btn-primary" href="/dienstleister/registrieren">Kostenlos registrieren</a><a class="btn btn-ghost" href="/werben">Premium-Platzierung</a></div>
     </div>
   </section>
 
   <section class="section">
-    <div class="wrap">
-      <div class="grid grid-3">
-        <div class="card"><Icon name="euro" class="icon" /><h3>Keine Lead-Gebühren</h3><p>Viele Portale verkaufen dieselbe Anfrage an fünf Firmen. Bei Saubera zahlen Sie dafür nichts.</p></div>
-        <div class="card"><Icon name="list" class="icon" /><h3>Schneller kalkulieren</h3><p>Jede Anfrage kommt mit Leistungsverzeichnis: Fläche, Bereiche, Intervalle. Kein Rätselraten, weniger Besichtigungen.</p></div>
-        <div class="card"><Icon name="pin" class="icon" /><h3>Nur was passt</h3><p>Sie legen Leistungen und Einsatzradius fest. Anfragen außerhalb davon sehen Sie nicht.</p></div>
-        <div class="card"><Icon name="star" class="icon" /><h3>Reputation aufbauen</h3><p>Bewertungen pro Einsatz zeigen, dass Sie zuverlässig sind, und helfen bei der nächsten Ausschreibung.</p></div>
-        <div class="card"><Icon name="clipboard" class="icon" /><h3>Leistungsnachweise digital</h3><p>Einsätze abhaken statt Stundenzettel. Ihr Kunde sieht, was erledigt wurde, und Diskussionen werden seltener.</p></div>
-        <div class="card"><Icon name="sparkle" class="icon" /><h3>Nacharbeiten direkt</h3><p>Das Team Ihres Kunden meldet Nacharbeiten per Handy direkt an Sie, optional per Scan eines BASETAGS. Sie reagieren, bevor Ärger entsteht.</p></div>
+    <div class="wrap editorial">
+      <h2>Was anders ist</h2>
+      <div class="editorial-body">
+        <p>Viele Portale verkaufen dieselbe Anfrage an fünf Firmen und kassieren pro Kontakt, egal ob daraus ein Auftrag wird. Bei Saubera zahlen Sie dafür nichts. Wir verdienen an Werbung und an Premium-Platzierungen, die Sie buchen können, aber nicht müssen.</p>
+        <dl class="facts">
+          <dt>Keine Lead-Gebühren</dt><dd>Registrierung und Anfragen sind kostenlos, ohne Mindestlaufzeit.</dd>
+          <dt>Schneller kalkulieren</dt><dd>Jede Anfrage kommt mit Leistungsverzeichnis: Fläche, Bereiche, Intervalle. Weniger Rätselraten, weniger Besichtigungen.</dd>
+          <dt>Nur was passt</dt><dd>Sie legen Leistungen und Einsatzradius fest. Alles andere sehen Sie nicht.</dd>
+          <dt>Reputation, die mitwächst</dt><dd>Bewertungen pro Einsatz zeigen, dass Sie zuverlässig sind, und zählen bei der nächsten Ausschreibung.</dd>
+          <dt>Nachweise digital</dt><dd>Einsätze abhaken statt Stundenzettel. Ihr Kunde sieht, was erledigt wurde, und Diskussionen werden seltener.</dd>
+          <dt>Nacharbeiten direkt</dt><dd>Das Team Ihres Kunden meldet per Handy direkt an Sie, optional per BASETAG. Sie reagieren, bevor Ärger entsteht.</dd>
+        </dl>
       </div>
     </div>
   </section>
 
   <section class="section section-soft">
-    <div class="wrap">
-      <div class="section-head"><span class="eyebrow">Ablauf</span><h2>So werden Sie Saubera-Partner</h2></div>
-      <div class="grid grid-3 steps mt-l">
-        <div class="step"><h3>Profil anlegen</h3><p>Firma, Leistungen, Einsatzgebiet und Ansprechperson. Dauert drei Minuten.</p></div>
-        <div class="step"><h3>Prüfung</h3><p>Wir prüfen Gewerbenachweis und Versicherung und schalten Ihr Profil frei.</p></div>
-        <div class="step"><h3>Anfragen erhalten</h3><p>Passende Ausschreibungen landen bei Ihnen. Sie entscheiden, worauf Sie anbieten.</p></div>
+    <div class="wrap editorial">
+      <h2>Wie Sie Partner werden</h2>
+      <div class="editorial-body">
+        <p>Sie legen Ihr Profil mit Firma, Leistungen, Einsatzgebiet und Ansprechperson an, das dauert ein paar Minuten. Wir prüfen Gewerbenachweis und Versicherung und schalten Sie frei. Danach landen passende Ausschreibungen bei Ihnen, und Sie entscheiden, worauf Sie anbieten.</p>
+        <p><a class="link-strong" href="/dienstleister/registrieren">Zur Registrierung</a></p>
       </div>
     </div>
   </section>
 
   <section class="section">
-    <div class="wrap">
-      <div class="section-head mb-l"><h2>Fragen von Reinigungsfirmen</h2></div>
-      <Faq items={faq} />
+    <div class="wrap editorial">
+      <h2>Fragen von Reinigungsfirmen</h2>
+      <div class="editorial-body"><Faq items={faq} /></div>
     </div>
   </section>
   <CtaBand title="Bereit für neue Gewerbekunden?" text="Registrierung kostenlos, keine Mindestlaufzeit." href="/dienstleister/registrieren" label="Jetzt registrieren" />

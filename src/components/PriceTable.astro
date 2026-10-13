@@ -1,0 +1,23 @@
+---
+// The services as a price list: what it is, how often it usually runs, what it roughly costs.
+import { leistungen } from '../data/leistungen.ts';
+import { einheitspreis } from '../lib/preise.ts';
+---
+<div class="table-scroll">
+  <table class="prices">
+    <thead>
+      <tr><th scope="col">Leistung</th><th scope="col">Typisch für</th><th scope="col">Üblicher Turnus</th><th scope="col" class="r">Richtpreis netto</th><th scope="col"><span class="sr">Anfragen</span></th></tr>
+    </thead>
+    <tbody>
+      {leistungen.map((l) => (
+        <tr>
+          <th scope="row"><a href={`/leistungen/${l.slug}`}>{l.name}</a></th>
+          <td>{l.objekte.slice(0, 3).join(', ')}</td>
+          <td>{l.turnus}</td>
+          <td class="r num">{einheitspreis(l)}</td>
+          <td class="r"><a class="ask" href={`/anfrage?leistung=${l.slug}`}>Anfragen</a></td>
+        </tr>
+      ))}
+    </tbody>
+  </table>
+</div>

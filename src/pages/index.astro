@@ -1,157 +1,53 @@
 ---
 import Base from '../layouts/Base.astro';
-import Icon from '../components/Icon.astro';
-import ServiceGrid from '../components/ServiceGrid.astro';
-import CtaBand from '../components/CtaBand.astro';
-import Faq from '../components/Faq.astro';
-
-const faq = [
-  { q: 'Was kostet Saubera für Auftraggeber?', a: 'Nichts. Anfrage, Angebotsvergleich und Betreuung sind für Unternehmen kostenlos. Sie zahlen nur die Reinigungsleistung, die Sie mit dem Dienstleister vereinbaren.' },
-  { q: 'Für wen ist Saubera gedacht?', a: 'Ausschließlich für gewerbliche Auftraggeber: Unternehmen, Praxen, Handel, Gastronomie, Industrie und Hausverwaltungen. Privathaushalte und öffentliche Flächen vermitteln wir nicht.' },
-  { q: 'Wie werden die Reinigungsfirmen ausgewählt?', a: 'Jede Firma registriert sich mit Gewerbenachweis und Leistungsprofil. Wir prüfen die Angaben, bevor sie Anfragen erhält. Nach jedem Auftrag fließen Ihre Bewertungen in das Profil ein.' },
-  { q: 'Warum ein Leistungsverzeichnis?', a: 'Weil Angebote sonst nicht vergleichbar sind. Sie beschreiben einmal Fläche, Räume und Intervalle, und alle Anbieter kalkulieren auf derselben Grundlage.' },
-  { q: 'Was passiert, wenn die Reinigungskraft ausfällt?', a: 'Sie melden es uns, und wir organisieren über unser Partnernetz eine Vertretung. Darum müssen Sie sich nicht selbst kümmern.' },
-];
+import PriceCalc from '../components/PriceCalc.astro';
+import PriceTable from '../components/PriceTable.astro';
 ---
 <Base title="Saubera">
   <section class="hero">
-    <div class="wrap hero-grid">
-      <div>
-        <span class="eyebrow">Nur für Unternehmen</span>
-        <h1>Reinigung, die <em>einfach läuft.</em></h1>
-        <p class="lead">Saubera verbindet Ihr Unternehmen mit geprüften Reinigungsfirmen in Ihrer Nähe. Sie bekommen vergleichbare Angebote und eine Betreuung, die nach der Vermittlung nicht aufhört.</p>
-        <div class="btn-row">
-          <a class="btn btn-primary" href="/anfrage">Kostenlos Angebote erhalten <Icon name="arrow" /></a>
-          <a class="btn btn-ghost" href="/dienstleister">Ich bin Reinigungsfirma</a>
-        </div>
-        <ul class="trust">
-          <li><Icon name="check" />Für Auftraggeber kostenlos</li>
-          <li><Icon name="shield" />Geprüfte Fachbetriebe</li>
-          <li><Icon name="scale" />Vergleichbare Angebote</li>
-        </ul>
-      </div>
-      <div class="hero-card" aria-label="Beispiel einer Anfrage">
-        <h3>Leistungsverzeichnis <span class="status-pill">3 Angebote</span></h3>
-        <table class="lv">
-          <tbody>
-            <tr><td>1.1</td><td>Büroflächen, 280 m²</td><td>3× / Woche</td></tr>
-            <tr><td>1.2</td><td>Teeküche, 18 m²</td><td>täglich</td></tr>
-            <tr><td>1.3</td><td>Sanitär, 4 WC</td><td>täglich</td></tr>
-            <tr><td>1.4</td><td>Empfang, 64 m²</td><td>3× / Woche</td></tr>
-            <tr><td>2.1</td><td>Fenster, 140 m²</td><td>quartalsweise</td></tr>
-          </tbody>
-        </table>
-        <ul class="feed">
-          <li><Icon name="clipboard" />Leistungsnachweis für Dienstag ist eingegangen</li>
-          <li><Icon name="star" />Ihre Bewertung: 5 von 5 für die Glasreinigung</li>
-          <li><Icon name="swap" />Vertretung für Urlaubswoche ist eingeplant</li>
-        </ul>
-      </div>
+    <div class="wrap">
+      <h1>Was kostet die Reinigung Ihrer Firma?</h1>
+      <p class="lead">Rechnen Sie es hier grob aus. Danach holen wir Ihnen echte Angebote geprüfter Reinigungsfirmen, alle auf derselben Grundlage und für Sie kostenlos.</p>
+      <PriceCalc />
+      <p class="hero-facts">Nur für Unternehmen, Praxen, Handel, Industrie und Hausverwaltungen <span aria-hidden="true">/</span> Für Auftraggeber kostenlos <span aria-hidden="true">/</span> Reinigungsfirmen zahlen keine Lead-Gebühr</p>
     </div>
   </section>
 
   <section class="section">
     <div class="wrap">
-      <div class="section-head">
-        <span class="eyebrow">So funktioniert's</span>
-        <h2>In drei Schritten zur passenden Reinigungsfirma</h2>
-        <p class="lead">Kein Telefonmarathon, keine Angebote, die man nicht vergleichen kann.</p>
+      <div class="table-head">
+        <h2>Preisspiegel Gebäudereinigung</h2>
+        <p>Was Reinigung für Unternehmen 2026 ungefähr kostet, netto je Einsatz. Die Spanne hängt von Verschmutzung, Zugang, Uhrzeit und Region ab.</p>
       </div>
-      <div class="grid grid-3 steps mt-l">
-        <div class="step">
-          <h3>Objekt beschreiben</h3>
-          <p>Fläche, Objektart, Leistungen und Turnus angeben. Daraus entsteht Ihr Leistungsverzeichnis, die gemeinsame Grundlage für alle Angebote.</p>
-        </div>
-        <div class="step">
-          <h3>Angebote vergleichen</h3>
-          <p>Geprüfte Reinigungsfirmen aus Ihrer Region kalkulieren auf dieselbe Grundlage. Sie vergleichen Preis, Profil und Bewertungen und entscheiden.</p>
-        </div>
-        <div class="step">
-          <h3>Entspannt betreut</h3>
-          <p>Nach dem Start bleiben wir dabei: Leistungsnachweise, Bewertung pro Einsatz und Vertretung bei Ausfall laufen über Saubera.</p>
-        </div>
-      </div>
+      <PriceTable />
     </div>
   </section>
 
   <section class="section section-soft">
-    <div class="wrap">
-      <div class="section-head">
-        <span class="eyebrow">Leistungen</span>
-        <h2>Alles, was sichtbar ist, wird sauber</h2>
-        <p class="lead">Von der täglichen Büroreinigung bis zur Photovoltaikanlage auf dem Hallendach. Ein Portal für alle Reinigungsleistungen Ihres Unternehmens.</p>
-      </div>
-      <div class="mt-l"><ServiceGrid limit={8} /></div>
-      <p class="mt-m"><a class="btn btn-ghost" href="/leistungen">Alle Leistungen ansehen</a></p>
-    </div>
-  </section>
-
-  <section class="section section-dark">
-    <div class="wrap">
-      <div class="split">
-        <div>
-          <span class="eyebrow">Mehr als eine Vermittlung</span>
-          <h2>Andere Portale enden beim Angebot. Wir fangen dort erst an.</h2>
-          <p class="lead">Die meisten Portale verkaufen Ihre Anfrage an Reinigungsfirmen und sind danach raus. Saubera begleitet den laufenden Betrieb, damit die Qualität auch im dritten Monat stimmt.</p>
-        </div>
-        <div class="grid grid-2">
-          <div class="card"><Icon name="clipboard" class="icon" /><h3>Leistungsnachweis</h3><p>Jeder Einsatz wird dokumentiert. Sie sehen, was wann gereinigt wurde.</p></div>
-          <div class="card"><Icon name="star" class="icon" /><h3>Bewertung pro Einsatz</h3><p>Kurzes Feedback statt Ärger, der sich monatelang aufstaut.</p></div>
-          <div class="card"><Icon name="swap" class="icon" /><h3>Vertretung bei Ausfall</h3><p>Krankheit oder Urlaub? Wir planen Ersatz aus dem Partnernetz.</p></div>
-          <div class="card"><Icon name="receipt" class="icon" /><h3>Alles an einem Ort</h3><p>Mehrere Leistungen und Standorte, ein Ansprechpartner.</p></div>
-        </div>
+    <div class="wrap editorial">
+      <h2>Bei uns fängt die Arbeit nach der Vermittlung erst an.</h2>
+      <div class="editorial-body">
+        <p>Die meisten Portale verkaufen Ihre Anfrage an ein paar Reinigungsfirmen und sind danach raus. Ob die Firma im dritten Monat noch so gründlich ist wie in der ersten Woche, bleibt Ihr Problem.</p>
+        <p>Bei Saubera beschreiben Sie Ihr Objekt einmal in einem Leistungsverzeichnis: welche Bereiche, wie viele Quadratmeter, wie oft. Alle Firmen kalkulieren darauf, deshalb lassen sich die Angebote Zeile für Zeile vergleichen. Den Vertrag schließen Sie direkt mit der Firma, die Sie wählen.</p>
+        <dl class="facts">
+          <dt>Leistungsverzeichnis</dt>
+          <dd>Gehört Ihnen und bleibt bei Saubera. Wer wechseln will, schreibt damit neu aus und fängt nicht bei null an.</dd>
+          <dt>Leistungsnachweis</dt>
+          <dd>Jeder Einsatz wird dokumentiert. Sie sehen, welche Positionen wann erledigt wurden.</dd>
+          <dt>Nacharbeiten</dt>
+          <dd>Ihr Team meldet per Handy, was liegen geblieben ist. Die Firma bekommt es sofort.</dd>
+          <dt>Vertretung</dt>
+          <dd>Fällt das Reinigungsteam aus, organisieren wir Ersatz aus dem Partnernetz.</dd>
+        </dl>
+        <p><a class="link-strong" href="/unternehmen">Mehr zum Ablauf für Auftraggeber</a></p>
       </div>
     </div>
   </section>
 
-  <section class="section">
-    <div class="wrap">
-      <div class="section-head">
-        <span class="eyebrow">Der Unterschied</span>
-        <h2>Saubera im Vergleich</h2>
-      </div>
-      <div class="table-scroll mt-l">
-        <table class="compare">
-          <thead><tr><th></th><th>Saubera</th><th>Typische Anfrageportale</th></tr></thead>
-          <tbody>
-            <tr><td>Nur gewerbliche Auftraggeber</td><td class="yes">Ja</td><td class="no">Meist gemischt mit Privat</td></tr>
-            <tr><td>Strukturiertes Leistungsverzeichnis</td><td class="yes">Ja</td><td class="no">Freitextformular</td></tr>
-            <tr><td>Betreuung nach Auftragsstart</td><td class="yes">Ja</td><td class="no">Endet bei der Vermittlung</td></tr>
-            <tr><td>Vertretung bei Ausfall</td><td class="yes">Ja</td><td class="no">Nein</td></tr>
-            <tr><td>Kosten für Reinigungsfirmen pro Anfrage</td><td class="yes">Keine</td><td class="no">Gebühr pro Lead</td></tr>
-          </tbody>
-        </table>
-      </div>
+  <section class="strip">
+    <div class="wrap strip-in">
+      <p><strong>Sie sind Reinigungsfirma?</strong> Registrieren Sie sich kostenlos. Wir verkaufen keine Leads, Sie bekommen nur Ausschreibungen aus Ihrem Gebiet.</p>
+      <a class="btn btn-mint" href="/dienstleister/registrieren">Kostenlos registrieren</a>
     </div>
   </section>
-
-  <section class="section section-sand">
-    <div class="wrap split">
-      <div>
-        <span class="eyebrow">Für Reinigungsfirmen</span>
-        <h2>Neue Gewerbekunden, ohne für Leads zu bezahlen</h2>
-        <p class="lead">Registrieren Sie Ihr Unternehmen kostenlos und erhalten Sie Anfragen, die zu Ihren Leistungen und Ihrem Einsatzgebiet passen. Mit klarem Leistungsverzeichnis statt vager Freitexte.</p>
-        <div class="btn-row"><a class="btn btn-primary" href="/dienstleister/registrieren">Kostenlos Partner werden</a><a class="btn btn-ghost" href="/dienstleister">Mehr erfahren</a></div>
-      </div>
-      <ul class="check-list">
-        <li>Keine Gebühr pro Anfrage, keine Mindestlaufzeit</li>
-        <li>Nur Anfragen aus Ihrem Einsatzgebiet und Ihren Leistungen</li>
-        <li>Vergleichbare Ausschreibungen, schneller kalkuliert</li>
-        <li>Bewertungen pro Einsatz bauen Ihre Reputation auf</li>
-        <li>Optional: Premium-Platzierung für mehr Sichtbarkeit</li>
-      </ul>
-    </div>
-  </section>
-
-  <section class="section">
-    <div class="wrap">
-      <div class="section-head mb-l">
-        <span class="eyebrow">Fragen</span>
-        <h2>Häufige Fragen</h2>
-      </div>
-      <Faq items={faq} />
-    </div>
-  </section>
-
-  <CtaBand />
 </Base>

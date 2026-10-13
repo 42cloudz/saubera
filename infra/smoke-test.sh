@@ -38,7 +38,7 @@ done
 
 check "health check" /healthz ok
 check "database" /api/health ok
-check "home page" / "Reinigung, die"
+check "home page with price calculator" / "Was kostet die Reinigung"
 check "service page" /leistungen/glasreinigung/ "Glas- und Fensterreinigung"
 check "request form" /anfrage/ 'action="/api/anfrage"'
 check "provider form" /dienstleister/registrieren/ 'action="/api/dienstleister"'
