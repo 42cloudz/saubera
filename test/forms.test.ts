@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
-import { isBot, parseAnfrage, parseDienstleister } from '../src/lib/forms.ts';
+import { isBot, parseAnfrage, parseDienstleister, parseRueckruf } from '../src/lib/forms.ts';
 
 const fd = (o: Record<string, string | string[]>) => {
   const f = new FormData();
@@ -33,4 +33,18 @@ test('provider website gets a scheme, premium flag is read', () => {
 test('honeypot detects bots', () => {
   assert.equal(isBot(fd({ website_url: 'spam' })), true);
   assert.equal(isBot(fd({})), false);
+});
+
+test('request keeps only well-formed company slugs', () => {
+  const r = parseAnfrage(fd({ ...base, wunschfirmen: ['mainblick-gebaeudeservice', 'Böse<script>', 'mainblick-gebaeudeservice'] }));
+  assert.ok(r.ok);
+  assert.deepEqual(r.value.wunschfirmen, ['mainblick-gebaeudeservice']);
+});
+
+test('callback needs name, phone number and company', () => {
+  const r = parseRueckruf(fd({ name: 'A', telefon: '12', datenschutz: 'ja' }));
+  assert.equal(r.ok, false);
+  const ok = parseRueckruf(fd({ name: 'A', telefon: '069 123456', dienstleister_id: '3', datenschutz: 'ja' }));
+  assert.ok(ok.ok);
+  assert.equal(ok.value.dienstleister_id, 3);
 });

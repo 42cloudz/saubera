@@ -2,13 +2,13 @@
 # Smoke test for the image. GitLab runs it before pushing to the registry.
 # Usage: infra/smoke-test.sh <image> [container-name]
 # Starts the image read-only like in the cluster (only /data and /tmp writable) and checks health,
-# pages, the security headers, a form post, the admin login and the 404 page.
+# pages, the directory and local pages, the security headers, form posts, the admin login and 404.
 set -eu
 
 image="$1"
 name="${2:-saubera-smoke-$$}"
 docker run -d --name "$name" --read-only --tmpfs /tmp --tmpfs /data:uid=1000,gid=1000 \
-  -e ADMIN_PASSWORD=smoke -e NOINDEX=1 "$image" >/dev/null
+  -e ADMIN_PASSWORD=smoke -e NOINDEX=1 -e SEED_DEMO=1 "$image" >/dev/null
 trap 'docker rm -f "$name" >/dev/null 2>&1 || true' EXIT
 
 # The slim Node image has no curl or wget, so the checks use Node's fetch inside the container.
@@ -42,6 +42,11 @@ check "home page with price calculator" / "Was kostet die Reinigung"
 check "service page" /leistungen/glasreinigung/ "Glas- und Fensterreinigung"
 check "request form" /anfrage/ 'action="/api/anfrage"'
 check "provider form" /dienstleister/registrieren/ 'action="/api/dienstleister"'
+check "directory with example companies" /firmen "Beispiel"
+check "company profile" /firmen/mainblick-gebaeudeservice-beispiel "Rückruf anfordern"
+check "local page" /leistungen/bueroreinigung/frankfurt-am-main "Büroreinigung in Frankfurt am Main"
+check "local page for a property type" /leistungen/bueroreinigung/arztpraxen/hamburg "für Arztpraxen in Hamburg"
+check "unknown place is 404" /leistungen/bueroreinigung/atlantis "^404"
 check "imprint" /impressum/ Impressum
 check "privacy notice" /datenschutz/ Datenschutzhinweise
 check "sitemap" /sitemap-index.xml sitemapindex
@@ -49,6 +54,7 @@ check "CSP header" / "content-security-policy: default-src 'self'"
 check "noindex header" / "x-robots-tag: noindex"
 check "404 page" /gibt-es-nicht "^404"
 check "form post" /api/anfrage '"ok":true' '{"method":"POST","headers":{"Origin":"http://127.0.0.1:8080","Accept":"application/json","Content-Type":"application/x-www-form-urlencoded"},"body":"firma=Smoke&ansprechpartner=Test&email=smoke@example.com&plz=22767&leistungen=bueroreinigung&datenschutz=ja"}'
+check "request number" /api/anfrage "A-20" '{"method":"POST","headers":{"Origin":"http://127.0.0.1:8080","Accept":"application/json","Content-Type":"application/x-www-form-urlencoded"},"body":"firma=Smoke&ansprechpartner=Test&email=smoke@example.com&plz=60311&leistungen=glasreinigung&wunschfirmen=mainblick-gebaeudeservice-beispiel&datenschutz=ja"}'
 check "cross-site post refused" /api/anfrage "^403" '{"method":"POST","headers":{"Origin":"https://evil.example"},"body":"a=b"}'
 check "admin needs login" /admin "^401"
 check "admin lists the post" /admin "Smoke" '{"headers":{"Authorization":"Basic YWRtaW46c21va2U="}}'

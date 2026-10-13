@@ -1,0 +1,52 @@
+---
+// The directory as a table: one row per company, one column per service it can be asked for.
+// Premium partners come first, on a yellow row, and can be asked to call back.
+import type { Firma } from '../lib/db.ts';
+import { leistungen } from '../data/leistungen.ts';
+import { offeredColumns } from '../lib/firmen.ts';
+
+interface Props { firmen: Firma[]; leistung?: string | null }
+const { firmen, leistung } = Astro.props;
+const cols = offeredColumns(firmen, leistungen);
+const tel = (t: string) => `tel:${t.replace(/[^\d+]/g, '')}`;
+---
+{firmen.length === 0 ? (
+  <div class="empty">
+    <p><strong>Hier ist noch keine Firma eingetragen.</strong> Schicken Sie uns trotzdem Ihre Anfrage: Wir suchen passende Betriebe für Sie heraus, auch außerhalb des Verzeichnisses.</p>
+    <a class="btn btn-primary" href={leistung ? `/anfrage?leistung=${leistung}` : '/anfrage'}>Angebote anfragen</a>
+  </div>
+) : (
+  <div class="table-scroll">
+    <table class="firmen">
+      <thead>
+        <tr>
+          <th scope="col"><span class="sr">Merken</span></th>
+          <th scope="col">Firma</th>
+          <th scope="col">Kontakt</th>
+          {cols.map((c) => <th scope="col" class={`rot${c.slug === leistung ? ' is-on' : ''}`}><span>{c.name}</span></th>)}
+        </tr>
+      </thead>
+      <tbody>
+        {firmen.map((f) => (
+          <tr class={f.premium ? 'is-premium' : undefined}>
+            <td>
+              <button type="button" class="merk" data-merk={f.slug} aria-pressed="false" title="Auf die Merkliste">
+                <svg viewBox="0 0 16 16" width="22" height="22" aria-hidden="true"><path d="M3.5 1.5h9v13L8 11l-4.5 3.5z" /></svg><span class="sr merk-label">Merken</span>
+              </button>
+            </td>
+            <th scope="row">
+              <a class="firma-name" href={`/firmen/${f.slug}`}>{f.firma}</a>
+              <span class="firma-meta">{f.plz} {f.ort}{f.premium && <span class="badge badge-premium">Premiumpartner</span>}{f.demo && <span class="badge badge-demo">Beispiel</span>}</span>
+              <span class="firma-leist">{f.leistungen.map((x) => leistungen.find((l) => l.slug === x)?.name).filter(Boolean).join(', ')}</span>
+            </th>
+            <td class="kontakt">
+              {f.telefon ? <a href={tel(f.telefon)}>{f.telefon}</a> : <a href={`/anfrage?firmen=${f.slug}`}>Angebot anfragen</a>}
+              {f.premium && <a class="rueckruf-link" href={`/firmen/${f.slug}#rueckruf`}>Rückruf anfordern</a>}
+            </td>
+            {cols.map((c) => <td class="dot-cell">{f.leistungen.includes(c.slug) ? <span class="dot" title={c.name}><span class="sr">bietet {c.name}</span></span> : <span class="sr">nein</span>}</td>)}
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+)}

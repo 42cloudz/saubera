@@ -1,0 +1,25 @@
+---
+// The visitor's bookmarked companies. The list lives in the browser (src/scripts/merkliste.ts);
+// this page fetches names from /api/firmen and sends them all into one request.
+import Base from '../layouts/Base.astro';
+---
+<Base title="Merkliste" description="Ihre gemerkten Reinigungsfirmen auf Saubera.">
+  <section class="page-head">
+    <div class="wrap">
+      <div class="crumbs"><a href="/">Start</a> / Merkliste</div>
+      <h1>Merkliste</h1>
+      <p class="lead">Firmen, die Sie sich gemerkt haben. Fragen Sie alle mit einer Anfrage an: Jede bekommt dasselbe Leistungsverzeichnis.</p>
+    </div>
+  </section>
+  <section class="section">
+    <div class="wrap">
+      <div class="merkliste" data-merkliste>
+        <p class="merk-empty">Ihre Merkliste ist leer. Im <a href="/firmen">Firmenverzeichnis</a> merken Sie Firmen mit dem Lesezeichen-Symbol.</p>
+        <ul class="merk-items"></ul>
+        <div class="btn-row mt-m merk-actions" hidden><a class="btn btn-primary" data-merk-anfrage href="/anfrage">Alle gemerkten Firmen anfragen</a><a class="btn btn-ghost" href="/firmen">Weitere Firmen finden</a></div>
+      </div>
+      <p class="form-note">Die Merkliste wird nur in diesem Browser gespeichert, ohne Konto.</p>
+    </div>
+  </section>
+  <script>import '../scripts/merkliste-seite.ts';</script>
+</Base>

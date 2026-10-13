@@ -49,7 +49,7 @@ Hat Argo CD schon eine Credential-Vorlage für `https://gitlab.com/42cloudz`, en
 
 ### 2. Admin und Mail
 
-`/admin` zeigt alle Anfragen und Registrierungen, passende Reinigungsfirmen pro Anfrage, Status und CSV-Export. Ohne `ADMIN_PASSWORD` antwortet `/admin` mit 404. Mit `SMTP_URL` und `NOTIFY_EMAIL` kommt zu jedem Eingang eine Mail. Alle Werte sind optional.
+`/admin` zeigt alle Anfragen, Registrierungen und Rückrufwünsche, passende Reinigungsfirmen pro Anfrage, Status, Premium-Schalter und CSV-Export. Eine Firma erscheint im Verzeichnis, sobald ihr Status „freigeschaltet“ ist. Ohne `ADMIN_PASSWORD` antwortet `/admin` mit 404. Mit `SMTP_URL` und `NOTIFY_EMAIL` kommt zu jedem Eingang eine Mail. Alle Werte sind optional.
 
 ```sh
 kubectl -n saubera create secret generic saubera-secrets \
@@ -79,7 +79,7 @@ Dieselbe IP wie mondaymustdie und gewerbejobs24 (Stand 2026-10). Sobald DNS zeig
 
 ## Später: eigene Domain
 
-Für die echte Domain ein Overlay `infra/k8s/overlays/prod` aus `test` kopieren, Host und Zertifikat ändern, `NOINDEX` und den `SITE_URL`-Patch anpassen, eine zweite Application anlegen und in `.gitlab-ci.yml` den sed-Schritt auch auf das neue Overlay anwenden. `SITE_URL` steuert Canonical-Links und Sitemap; die Sitemap-URL in `public/robots.txt` mit anpassen.
+Für die echte Domain ein Overlay `infra/k8s/overlays/prod` aus `test` kopieren, Host und Zertifikat ändern, `NOINDEX`, `SEED_DEMO` und den `SITE_URL`-Patch anpassen (auf der echten Seite kein `SEED_DEMO`), eine zweite Application anlegen und in `.gitlab-ci.yml` den sed-Schritt auch auf das neue Overlay anwenden. `SITE_URL` steuert Canonical-Links und Sitemap; die Sitemap-URL in `public/robots.txt` mit anpassen.
 
 ## Lokal
 

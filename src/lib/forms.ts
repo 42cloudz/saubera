@@ -1,7 +1,7 @@
 // Parsing and validation of the two public forms. Pure functions, so test/forms.test.ts can run them
 // without a server. Every field is trimmed and capped; unknown services are dropped.
 import { leistungBySlug } from '../data/leistungen.ts';
-import type { AnfrageInput, DienstleisterInput } from './db.ts';
+import type { AnfrageInput, DienstleisterInput, RueckrufInput } from './db.ts';
 
 type Fields = { get(name: string): unknown; getAll(name: string): unknown[] };
 
@@ -69,7 +69,11 @@ export function parseAnfrage(f: Fields): Result<AnfrageInput> {
       objektart: text(f, 'objektart', 80),
       flaeche_m2: int(f, 'flaeche_m2', 1, 1_000_000),
       turnus: text(f, 'turnus', 40),
-      start: text(f, 'start', 40),
+      start: text(f, 'start', 80),
+      adresse: text(f, 'adresse', 200),
+      dauer: text(f, 'dauer', 80),
+      hygiene: text(f, 'hygiene', 1000),
+      wunschfirmen: [...new Set(f.getAll('wunschfirmen').filter((v): v is string => typeof v === 'string' && /^[a-z0-9-]{1,80}$/.test(v)))].slice(0, 20),
     },
   };
 }
@@ -88,6 +92,25 @@ export function parseDienstleister(f: Fields): Result<DienstleisterInput> {
       mitarbeitende: text(f, 'mitarbeitende', 40),
       website,
       premium: f.get('premium') === 'ja',
+      strasse: text(f, 'strasse', 120),
+      beschreibung: text(f, 'beschreibung', 4000),
+      rechtsform: text(f, 'rechtsform', 80),
+      inhaber: text(f, 'inhaber', 120),
+      register: text(f, 'register', 160),
+      ust_id: text(f, 'ust_id', 40),
     },
   };
+}
+
+export function parseRueckruf(f: Fields): Result<RueckrufInput> {
+  const errors: string[] = [];
+  const name = text(f, 'name', 120);
+  const telefon = text(f, 'telefon', 40);
+  const id = int(f, 'dienstleister_id', 1, 1e9);
+  if (!name) errors.push('Bitte geben Sie Ihren Namen an.');
+  if (!telefon || telefon.replace(/\D/g, '').length < 6) errors.push('Bitte geben Sie eine Telefonnummer an.');
+  if (!id) errors.push('Die Firma fehlt.');
+  if (f.get('datenschutz') !== 'ja') errors.push('Bitte bestätigen Sie die Datenschutzhinweise.');
+  if (errors.length) return { ok: false, errors };
+  return { ok: true, value: { dienstleister_id: id!, name: name!, telefon: telefon!, firma: text(f, 'firma', 120), anliegen: text(f, 'anliegen', 1000) } };
 }

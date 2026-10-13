@@ -6,7 +6,7 @@ import { allow, clientAddress } from './ratelimit.ts';
 
 export async function handleSubmit<T>(
   ctx: APIContext,
-  opts: { parse: (f: FormData) => Result<T>; save: (v: T) => Promise<void> | void; back: string; thanks: string },
+  opts: { parse: (f: FormData) => Result<T>; save: (v: T) => Promise<string | void> | string | void; back: string; thanks: string },
 ): Promise<Response> {
   const wantsJson = (ctx.request.headers.get('accept') ?? '').includes('application/json');
   const reply = (status: number, body: { ok: boolean; errors?: string[]; redirect?: string }) => {
@@ -28,6 +28,7 @@ export async function handleSubmit<T>(
   }
   const parsed = opts.parse(form);
   if (!parsed.ok) return reply(422, { ok: false, errors: parsed.errors });
-  await opts.save(parsed.value);
-  return reply(200, { ok: true, redirect: opts.thanks });
+  // save may return a more specific thank-you URL, e.g. with the request number.
+  const thanks = (await opts.save(parsed.value)) || opts.thanks;
+  return reply(200, { ok: true, redirect: thanks });
 }

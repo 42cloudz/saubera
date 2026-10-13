@@ -1,4 +1,5 @@
-# Test deployment on saubera.42cloudz.com, kept out of search engines (NOINDEX=1).
+# Test deployment on saubera.42cloudz.com, kept out of search engines (NOINDEX=1), with the
+# fictional example companies in the directory (SEED_DEMO=1).
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 namespace: saubera
@@ -15,6 +16,9 @@ patches:
       - op: add
         path: /spec/template/spec/containers/0/env/-
         value: { name: SITE_URL, value: "https://saubera.42cloudz.com" }
+      - op: add
+        path: /spec/template/spec/containers/0/env/-
+        value: { name: SEED_DEMO, value: "1" }
 images:
   # CI rewrites this line on the branch `deploy` (see .gitlab-ci.yml, deploy).
   - name: registry.gitlab.com/42cloudz/saubera/web

@@ -4,7 +4,7 @@
 import { leistungen, leistungBySlug, turnusOptionen } from '../data/leistungen.ts';
 import { richtpreis, spanneText } from '../lib/preise.ts';
 
-interface Props { slug?: string; menge?: number; dark?: boolean }
+interface Props { slug?: string; menge?: number; dark?: boolean; plz?: string; objektart?: string; ort?: string }
 const l = leistungBySlug.get(Astro.props.slug ?? 'bueroreinigung') ?? leistungen[0];
 const menge = Astro.props.menge ?? (l.preis.einheit === 'Fahrzeug' ? 10 : 400);
 const start = richtpreis(l, menge, l.standardTurnus);
@@ -30,9 +30,11 @@ const daten = Object.fromEntries(leistungen.map((x) => [x.slug, { preis: x.preis
     </div>
     <div class="calc-field">
       <label for="calc-plz">PLZ</label>
-      <input id="calc-plz" name="plz" type="text" inputmode="numeric" maxlength="5" pattern="\d{5}" placeholder="z. B. 22767" />
+      <input id="calc-plz" name="plz" type="text" inputmode="numeric" maxlength="5" pattern="\d{5}" value={Astro.props.plz} placeholder="z. B. 22767" />
     </div>
   </div>
+  {Astro.props.objektart && <input type="hidden" name="objektart" value={Astro.props.objektart} />}
+  {Astro.props.ort && <input type="hidden" name="ort" value={Astro.props.ort} />}
   <div class="calc-result">
     <p><span class="calc-label">Richtpreis netto</span> <output id="calc-out" for="calc-leistung calc-menge calc-turnus">{start ? spanneText(start) : '–'}</output></p>
     <button class="btn btn-primary" type="submit">Echte Angebote dazu anfordern</button>

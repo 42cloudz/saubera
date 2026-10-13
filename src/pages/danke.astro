@@ -1,11 +1,26 @@
 ---
 import Base from '../layouts/Base.astro';
+
+export const prerender = false;
+
+// One page for every form; ?typ= picks the text, ?ref= shows the request number.
+const typ = Astro.url.searchParams.get('typ');
+const refRaw = Astro.url.searchParams.get('ref') ?? '';
+const ref = /^A-\d{4}-\d{2}-\d{4,}$/.test(refRaw) ? refRaw : null;
+const text =
+  typ === 'rueckruf'
+    ? { h: 'Danke, wir geben Ihren Rückrufwunsch weiter.', p: 'Die Firma meldet sich telefonisch bei Ihnen, in der Regel am selben oder nächsten Werktag.' }
+    : typ === 'dienstleister'
+      ? { h: 'Danke für Ihre Registrierung.', p: 'Wir prüfen Ihre Angaben und schalten Ihr Profil frei. Danach erhalten Sie passende Ausschreibungen aus Ihrem Gebiet per E-Mail.' }
+      : { h: 'Vielen Dank, Ihre Anfrage ist angekommen.', p: 'Wir erstellen daraus Ihr Leistungsverzeichnis und schicken es an passende, geprüfte Firmen. Die Angebote bekommen Sie per E-Mail, bei Rückfragen rufen wir an.' };
+Astro.response.headers.set('X-Robots-Tag', 'noindex');
 ---
 <Base title="Vielen Dank">
   <section class="page-head">
     <div class="wrap">
-      <h1 id="danke-titel">Vielen Dank, Ihre Angaben sind angekommen.</h1>
-      <p class="lead">Wir prüfen Ihre Angaben und melden uns per E-Mail. Bei Rückfragen rufen wir Sie an, wenn Sie eine Telefonnummer angegeben haben.</p>
+      <h1 id="danke-titel">{text.h}</h1>
+      <p class="lead">{text.p}</p>
+      {ref && <p class="ref-box">Ihre Angebots-ID <strong class="num">{ref}</strong><span>Bitte geben Sie sie bei Rückfragen an.</span></p>}
       <div class="btn-row mt-m"><a class="btn btn-primary" href="/">Zur Startseite</a><a class="btn btn-ghost" href="/leistungen">Leistungen ansehen</a></div>
     </div>
   </section>

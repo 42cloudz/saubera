@@ -1,0 +1,97 @@
+---
+// A company's public profile: introduction, area served, legal details, contact, and for premium
+// partners a callback form.
+import Base from '../../layouts/Base.astro';
+import FormFooter from '../../components/FormFooter.astro';
+import { leistungBySlug } from '../../data/leistungen.ts';
+import { orte } from '../../data/orte.ts';
+import { getFirma } from '../../lib/db.ts';
+import { reaches } from '../../lib/matching.ts';
+
+export const prerender = false;
+
+const f = getFirma(Astro.params.slug ?? '');
+if (!f) return new Response(null, { status: 404 });
+const services = f.leistungen.map((s) => leistungBySlug.get(s)).filter((l) => l !== undefined);
+const nearby = orte.filter((o) => reaches(f, o.plz)).slice(0, 24);
+const tel = f.telefon ? `tel:${f.telefon.replace(/[^\d+]/g, '')}` : null;
+const rechtlich = [
+  ['Firma', f.firma],
+  ['Rechtsform', f.rechtsform],
+  ['Vertreten durch', f.inhaber],
+  ['Anschrift', [f.strasse, `${f.plz} ${f.ort ?? ''}`.trim()].filter(Boolean).join(', ')],
+  ['Registereintrag', f.register],
+  ['USt-IdNr.', f.ust_id],
+].filter(([, v]) => v) as [string, string][];
+const ld = {
+  '@context': 'https://schema.org',
+  '@type': 'LocalBusiness',
+  name: f.firma,
+  address: { '@type': 'PostalAddress', postalCode: f.plz, addressLocality: f.ort ?? undefined, streetAddress: f.strasse ?? undefined, addressCountry: 'DE' },
+  telephone: f.telefon ?? undefined,
+  url: f.website ?? undefined,
+};
+---
+<Base title={`${f.firma}, Reinigung in ${f.ort ?? f.plz}`} description={`${f.firma} aus ${f.plz} ${f.ort ?? ''}: ${services.map((l) => l.name).join(', ')}. Angebot über Saubera anfragen.`} jsonLd={f.demo ? undefined : ld}>
+  <section class={`page-head firma-head${f.premium ? ' is-premium' : ''}`}>
+    <div class="wrap">
+      <div class="crumbs"><a href="/">Start</a> / <a href="/firmen">Firmenverzeichnis</a> / {f.firma}</div>
+      <h1>{f.firma}</h1>
+      <p class="firma-meta">{f.plz} {f.ort}{f.radius_km && <> · Einsatzradius {f.radius_km} km</>}{f.mitarbeitende && <> · {f.mitarbeitende} Mitarbeitende</>}
+        {f.premium && <span class="badge badge-premium">Premiumpartner</span>}{f.demo && <span class="badge badge-demo">Beispiel</span>}</p>
+      <div class="btn-row mt-m">
+        <a class="btn btn-primary" href={`/anfrage?firmen=${f.slug}`}>Angebot einholen</a>
+        {tel && <a class="btn btn-ghost" href={tel}>Anrufen: {f.telefon}</a>}
+        {f.premium && <a class="btn btn-ghost" href="#rueckruf">Rückruf anfordern</a>}
+        <button type="button" class="btn btn-ghost merk merk-wide" data-merk={f.slug} aria-pressed="false">
+          <svg viewBox="0 0 16 16" width="22" height="22" aria-hidden="true"><path d="M3.5 1.5h9v13L8 11l-4.5 3.5z" /></svg><span class="merk-label">Merken</span>
+        </button>
+      </div>
+    </div>
+  </section>
+  <section class="section">
+    <div class="wrap editorial">
+      <h2>Vorstellung</h2>
+      <div class="editorial-body">
+        {(f.beschreibung ?? 'Diese Firma hat noch keine Vorstellung hinterlegt.').split(/\n{2,}/).map((p) => <p>{p}</p>)}
+        <dl class="facts">
+          <dt>Leistungen</dt><dd>{services.map((l, i) => <>{i > 0 && ', '}<a href={`/leistungen/${l.slug}`}>{l.name}</a></>)}</dd>
+          <dt>Einsatzgebiet</dt><dd>{f.radius_km ? `Rund ${f.radius_km} km um ${f.plz} ${f.ort ?? ''}` : `${f.plz} ${f.ort ?? ''} und Umgebung`}{nearby.length > 0 && <>, zum Beispiel {nearby.map((o, i) => <>{i > 0 && ', '}{o.name}</>)}</>}</dd>
+          {f.website && <><dt>Website</dt><dd><a href={f.website} rel="nofollow noopener" target="_blank">{f.website.replace(/^https?:\/\//, '')}</a></dd></>}
+        </dl>
+      </div>
+    </div>
+  </section>
+  {rechtlich.length > 0 && (
+    <section class="section section-soft">
+      <div class="wrap editorial">
+        <h2>Rechtliche Angaben</h2>
+        <div class="editorial-body">
+          <dl class="facts">{rechtlich.map(([k, v]) => <><dt>{k}</dt><dd>{v}</dd></>)}</dl>
+          <p class="form-note">Angaben der Firma. Saubera prüft Gewerbeanmeldung und Versicherung, bevor ein Profil erscheint.</p>
+        </div>
+      </div>
+    </section>
+  )}
+  {f.premium && (
+    <section class="section" id="rueckruf">
+      <div class="wrap editorial">
+        <h2>Rückruf anfordern</h2>
+        <div class="editorial-body">
+          <p>Hinterlassen Sie Ihre Nummer. {f.firma} ruft Sie in der Regel am selben oder nächsten Werktag zurück.</p>
+          <form class="form-card" method="post" action="/api/rueckruf" data-enhance>
+            <div class="form-errors" role="alert"></div>
+            <input type="hidden" name="dienstleister_id" value={f.id} />
+            <div class="form-grid">
+              <div><label for="r-name">Ihr Name</label><input type="text" id="r-name" name="name" required autocomplete="name" /></div>
+              <div><label for="r-firma">Firma</label><input type="text" id="r-firma" name="firma" autocomplete="organization" /></div>
+              <div><label for="r-tel">Telefon</label><input id="r-tel" name="telefon" type="tel" required autocomplete="tel" /></div>
+              <div><label for="r-anliegen">Worum geht es? <span class="opt">(optional)</span></label><input type="text" id="r-anliegen" name="anliegen" placeholder="z. B. Büroreinigung, 300 m²" /></div>
+            </div>
+            <FormFooter submit="Rückruf anfordern" />
+          </form>
+        </div>
+      </div>
+    </section>
+  )}
+</Base>

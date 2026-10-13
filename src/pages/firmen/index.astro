@@ -1,0 +1,71 @@
+---
+// The public directory of approved cleaning companies, filterable by service, place and name.
+import Base from '../../layouts/Base.astro';
+import FirmenTable from '../../components/FirmenTable.astro';
+import { leistungen, leistungBySlug } from '../../data/leistungen.ts';
+import { bundeslaender, orteImLand, ortBySlug } from '../../data/orte.ts';
+import { findFirmen } from '../../lib/firmen.ts';
+
+export const prerender = false;
+
+const q = Astro.url.searchParams;
+const leistung = leistungBySlug.has(q.get('leistung') ?? '') ? q.get('leistung') : null;
+const ortParam = q.get('ort')?.trim() ?? '';
+const ort = ortBySlug.get(ortParam) ?? null;
+const plzRaw = (q.get('plz') ?? '').trim();
+const plz = /^\d{5}$/.test(plzRaw) ? plzRaw : ort?.plz ?? null;
+const name = (q.get('name') ?? '').trim().slice(0, 80);
+const firmen = findFirmen({ leistung, plz, name });
+const filtered = Boolean(leistung || plz || name);
+const where = ort ? `in ${ort.name}` : plz ? `für PLZ ${plz}` : '';
+const title = [leistung ? leistungBySlug.get(leistung)!.name : 'Reinigungsfirmen', where].filter(Boolean).join(' ');
+---
+<Base title={filtered ? title : 'Firmenverzeichnis Gebäudereinigung'} description="Geprüfte Reinigungsfirmen für Unternehmen: nach Leistung, Ort und Postleitzahl suchen, merken und gemeinsam anfragen.">
+  <section class="page-head">
+    <div class="wrap">
+      <div class="crumbs"><a href="/">Start</a> / Firmenverzeichnis</div>
+      <h1>{filtered ? title : 'Firmenverzeichnis'}</h1>
+      <p class="lead">Geprüfte Reinigungsfirmen für gewerbliche Objekte. Merken Sie sich passende Firmen und fragen Sie alle mit einer Anfrage an.</p>
+    </div>
+  </section>
+  <section class="section">
+    <div class="wrap dir">
+      <form class="dir-filter" method="get" action="/firmen">
+        <h2 class="sr">Filter</h2>
+        <label for="f-leistung">Leistung</label>
+        <select id="f-leistung" name="leistung">
+          <option value="">Alle Leistungen</option>
+          {leistungen.map((l) => <option value={l.slug} selected={l.slug === leistung}>{l.name}</option>)}
+        </select>
+        <label for="f-plz">PLZ</label>
+        <input type="text" id="f-plz" name="plz" inputmode="numeric" maxlength="5" pattern="\d{5}" value={/^\d{5}$/.test(plzRaw) ? plzRaw : ''} placeholder="z. B. 60311" />
+        <label for="f-ort">Ort</label>
+        <select id="f-ort" name="ort">
+          <option value="">Alle Orte</option>
+          {bundeslaender.map((b) => <optgroup label={b}>{orteImLand(b).map((o) => <option value={o.slug} selected={o.slug === ort?.slug}>{o.name}</option>)}</optgroup>)}
+        </select>
+        <label for="f-name">Firmenname</label>
+        <input type="text" id="f-name" name="name" value={name} />
+        <div class="btn-row"><button class="btn btn-primary" type="submit">Filtern</button>{filtered && <a class="btn btn-ghost" href="/firmen">Zurücksetzen</a>}</div>
+      </form>
+      <div class="dir-main">
+        <p class="dir-count"><strong>{firmen.length}</strong> {firmen.length === 1 ? 'Firma' : 'Firmen'}{filtered ? ' passen zu Ihrer Suche' : ' im Verzeichnis'}</p>
+        <FirmenTable firmen={firmen} leistung={leistung} />
+      </div>
+    </div>
+  </section>
+  <section class="section section-soft">
+    <div class="wrap dir-links">
+      <div>
+        <h2>Nach Leistung</h2>
+        <ul class="link-list">{leistungen.map((l) => <li><a href={`/firmen?leistung=${l.slug}`}>{l.name}</a></li>)}</ul>
+      </div>
+      <div>
+        <h2>Nach Ort</h2>
+        <dl class="laender">
+          {bundeslaender.map((b) => <><dt>{b}</dt><dd>{orteImLand(b).map((o, i) => <>{i > 0 && ', '}<a href={`/firmen?ort=${o.slug}`}>{o.name}</a></>)}</dd></>)}
+        </dl>
+      </div>
+    </div>
+  </section>
+</Base>

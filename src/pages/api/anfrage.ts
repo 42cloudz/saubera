@@ -10,8 +10,9 @@ export const POST: APIRoute = (ctx) =>
   handleSubmit(ctx, {
     parse: parseAnfrage,
     save: (a) => {
-      const id = insertAnfrage(a);
-      void notify(`Neue Anfrage #${id}: ${a.firma} (${a.plz})`, { ...a });
+      const { ref } = insertAnfrage(a);
+      void notify(`Neue Anfrage ${ref}: ${a.firma} (${a.plz})`, { ...a });
+      return `/danke?typ=anfrage&ref=${ref}`;
     },
     back: '/anfrage',
     thanks: '/danke?typ=anfrage',

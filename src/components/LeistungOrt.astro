@@ -1,0 +1,96 @@
+---
+// Local landing page "<Leistung> in <Ort>" or "<Leistung> für <Objektart> in <Ort>": price
+// calculator prefilled for the place, the companies serving it, a checklist of what is included,
+// and questions people ask. Tabs are anchors, so every part is in the page for search engines.
+import Base from '../layouts/Base.astro';
+import PriceCalc from './PriceCalc.astro';
+import FirmenTable from './FirmenTable.astro';
+import Faq from './Faq.astro';
+import AdSlot from './AdSlot.astro';
+import type { Leistung } from '../data/leistungen.ts';
+import { orteImLand, type Ort } from '../data/orte.ts';
+import { objekte, type Objekt } from '../data/objekte.ts';
+import { findFirmen } from '../lib/firmen.ts';
+import { einheitspreis } from '../lib/preise.ts';
+
+interface Props { l: Leistung; ort: Ort; objekt?: Objekt }
+const { l, ort, objekt } = Astro.props;
+const was = objekt ? `${l.name} für ${objekt.fuer}` : l.name;
+const h1 = `${was} in ${ort.name}`;
+const firmen = findFirmen({ leistung: l.slug, plz: ort.plz });
+const nachbarn = orteImLand(ort.land).filter((o) => o.slug !== ort.slug);
+const base = `/leistungen/${l.slug}`;
+const faq = [
+  { q: `Was kostet ${l.name} in ${ort.name}?`, a: `Als Richtwert gelten ${einheitspreis(l)} und Einsatz, netto. Der Preis hängt von Fläche, Turnus, Verschmutzung und Reinigungszeit ab. Mit dem Rechner oben sehen Sie eine Spanne für Ihr Objekt, verbindliche Preise kalkulieren die Firmen nach Ihrem Leistungsverzeichnis.` },
+  { q: 'Wie viele Angebote bekomme ich?', a: 'In der Regel drei bis fünf, von geprüften Firmen, die Ihre Leistung in Ihrer Region anbieten. Alle rechnen auf dieselben Positionen, deshalb können Sie Zeile für Zeile vergleichen.' },
+  { q: 'Was kostet mich Saubera?', a: 'Für Auftraggeber nichts. Den Vertrag schließen Sie direkt mit der Firma, die Sie wählen.' },
+  { q: 'Kann ich die Firma später wechseln?', a: 'Ja. Ihr Leistungsverzeichnis bleibt bei Saubera. Wer wechseln will, schreibt damit neu aus und fängt nicht bei null an.' },
+];
+const ld = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    { '@type': 'Service', serviceType: was, areaServed: { '@type': 'City', name: ort.name }, provider: { '@type': 'Organization', name: 'Saubera' }, audience: { '@type': 'BusinessAudience' } },
+    { '@type': 'FAQPage', mainEntity: faq.map((f) => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a } })) },
+  ],
+};
+---
+<Base title={`${h1}: Kosten und Angebote`} description={`${h1}: Richtpreis ${einheitspreis(l)}, geprüfte Firmen vor Ort und vergleichbare Angebote über Saubera. Nur für Unternehmen.`} jsonLd={ld}>
+  <section class="hero hero-sub">
+    <div class="wrap">
+      <div class="crumbs crumbs-dark"><a href="/">Start</a> / <a href="/leistungen">Leistungen</a> / <a href={base}>{l.name}</a> / {objekt ? <><a href={`${base}/${ort.slug}`}>{ort.name}</a> / {objekt.name}</> : ort.name}</div>
+      <h1>{h1}</h1>
+      <p class="lead">{l.kurz} Richtpreis: {einheitspreis(l)} und Einsatz. {firmen.length > 0 ? `${firmen.length} geprüfte ${firmen.length === 1 ? 'Firma' : 'Firmen'} für ${ort.name} im Verzeichnis.` : `Wir suchen passende Firmen für ${ort.name} für Sie heraus.`}</p>
+    </div>
+  </section>
+  <nav class="tabs" aria-label="Abschnitte">
+    <div class="wrap"><a href="#angebote">Angebote einholen</a><a href="#firmen">Dienstleister</a><a href="#checkliste">Checkliste</a><a href="#fragen">Häufige Fragen</a></div>
+  </nav>
+  <section class="section" id="angebote">
+    <div class="wrap">
+      <h2 class="h-section">Richtpreis berechnen und anfragen</h2>
+      <PriceCalc slug={l.slug} plz={ort.plz} ort={ort.name} objektart={objekt?.name} />
+    </div>
+  </section>
+  <section class="section section-soft" id="firmen">
+    <div class="wrap">
+      <div class="table-head">
+        <h2>{l.name} in {ort.name}: Dienstleister</h2>
+        <p>Firmen, die {l.name} anbieten und {ort.name} ({ort.plz}) in ihrem Einsatzgebiet haben. Merken Sie sich mehrere und fragen Sie alle auf einmal an.</p>
+      </div>
+      <FirmenTable firmen={firmen} leistung={l.slug} />
+      <p class="mt-m"><a class="link-strong" href={`/firmen?leistung=${l.slug}&ort=${ort.slug}`}>Im Firmenverzeichnis weiter filtern</a></p>
+    </div>
+  </section>
+  <section class="section" id="checkliste">
+    <div class="wrap editorial">
+      <h2>Checkliste: Was gehört dazu?</h2>
+      <div class="editorial-body">
+        <p>Diese Positionen stehen typischerweise im Leistungsverzeichnis für {was}. Bei der Anfrage legen Sie fest, was davon wie oft gemacht wird.</p>
+        <ul class="checklist">{l.umfang.map((u) => <li>{u}</li>)}</ul>
+        <dl class="facts">
+          <dt>Üblicher Turnus</dt><dd>{l.turnus}</dd>
+          <dt>Richtpreis</dt><dd>{einheitspreis(l)} und Einsatz, netto</dd>
+        </dl>
+      </div>
+    </div>
+    <div class="wrap mt-l"><AdSlot context={`${l.name} ${ort.name}`} /></div>
+  </section>
+  <section class="section section-soft" id="fragen">
+    <div class="wrap editorial">
+      <h2>Häufige Fragen</h2>
+      <div class="editorial-body"><Faq items={faq} /></div>
+    </div>
+  </section>
+  <section class="section">
+    <div class="wrap dir-links">
+      <div>
+        <h2>{l.name} in {ort.name} für</h2>
+        <ul class="link-list">{objekte.filter((o) => o.slug !== objekt?.slug).map((o) => <li><a href={`${base}/${o.slug}/${ort.slug}`}>{o.name}</a></li>)}</ul>
+      </div>
+      <div>
+        <h2>{l.name} in {ort.land}</h2>
+        {nachbarn.length > 0 ? <ul class="link-list">{nachbarn.map((o) => <li><a href={objekt ? `${base}/${objekt.slug}/${o.slug}` : `${base}/${o.slug}`}>{o.name}</a></li>)}</ul> : <p><a href={base}>Alle Orte für {l.name}</a></p>}
+      </div>
+    </div>
+  </section>
+</Base>

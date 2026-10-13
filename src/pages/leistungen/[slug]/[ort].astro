@@ -1,0 +1,12 @@
+---
+import LeistungOrt from '../../../components/LeistungOrt.astro';
+import { leistungBySlug } from '../../../data/leistungen.ts';
+import { ortBySlug } from '../../../data/orte.ts';
+
+export const prerender = false;
+
+const l = leistungBySlug.get(Astro.params.slug ?? '');
+const ort = ortBySlug.get(Astro.params.ort ?? '');
+if (!l || !ort) return new Response(null, { status: 404 });
+---
+<LeistungOrt l={l} ort={ort} />

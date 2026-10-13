@@ -20,6 +20,7 @@ import FormFooter from '../../components/FormFooter.astro';
           <div class="form-grid">
             <div><label for="firma">Firmenname</label><input type="text" id="firma" name="firma" required autocomplete="organization" /></div>
             <div><label for="website">Website <span class="opt">(optional)</span></label><input type="text" id="website" name="website" inputmode="url" placeholder="www.beispiel.de" /></div>
+            <div class="full"><label for="strasse">Straße und Hausnummer</label><input type="text" id="strasse" name="strasse" autocomplete="street-address" /></div>
             <div><label for="plz">PLZ des Firmensitzes</label><input type="text" id="plz" name="plz" required pattern="\d{5}" inputmode="numeric" maxlength="5" autocomplete="postal-code" /></div>
             <div><label for="ort">Ort</label><input type="text" id="ort" name="ort" autocomplete="address-level2" /></div>
             <div>
@@ -42,17 +43,27 @@ import FormFooter from '../../components/FormFooter.astro';
           </div>
         </fieldset>
         <fieldset>
-          <legend>2. Ihre Leistungen<small>Sie erhalten nur Anfragen zu diesen Leistungen</small></legend>
+          <legend>2. Ihr Profil im Verzeichnis<small>Erscheint erst, wenn wir Ihre Angaben geprüft haben</small></legend>
+          <div class="form-grid">
+            <div class="full"><label for="beschreibung">Vorstellung</label><textarea id="beschreibung" name="beschreibung" placeholder="Was Ihr Betrieb macht, für wen, seit wann, was Sie auszeichnet"></textarea></div>
+            <div><label for="rechtsform">Rechtsform</label><input type="text" id="rechtsform" name="rechtsform" placeholder="z. B. GmbH" /></div>
+            <div><label for="inhaber">Vertreten durch</label><input type="text" id="inhaber" name="inhaber" placeholder="Geschäftsführung oder Inhaber" /></div>
+            <div><label for="register">Registereintrag <span class="opt">(falls vorhanden)</span></label><input type="text" id="register" name="register" placeholder="z. B. Amtsgericht Offenbach, HRB 12345" /></div>
+            <div><label for="ust_id">USt-IdNr. <span class="opt">(optional)</span></label><input type="text" id="ust_id" name="ust_id" placeholder="DE123456789" /></div>
+          </div>
+        </fieldset>
+        <fieldset>
+          <legend>3. Ihre Leistungen<small>Sie erhalten nur Anfragen zu diesen Leistungen</small></legend>
           <ServiceChoices />
         </fieldset>
         <fieldset>
-          <legend>3. Ansprechperson</legend>
+          <legend>4. Ansprechperson</legend>
           <div class="form-grid">
             <div><label for="ansprechpartner">Name</label><input type="text" id="ansprechpartner" name="ansprechpartner" required autocomplete="name" /></div>
             <div><label for="email">E-Mail</label><input type="email" id="email" name="email" required autocomplete="email" /></div>
             <div><label for="telefon">Telefon</label><input type="tel" id="telefon" name="telefon" autocomplete="tel" /></div>
             <div class="full"><label for="nachricht">Zertifikate, Besonderheiten <span class="opt">(optional)</span></label><textarea id="nachricht" name="nachricht" placeholder="z. B. ISO 9001, Innungsbetrieb, Hebebühne vorhanden, 24/7-Notdienst"></textarea></div>
-            <div class="full"><label class="check"><input type="checkbox" name="premium" value="ja" /><span>Ich interessiere mich für eine Premium-Platzierung (unverbindlich).</span></label></div>
+            <div class="full"><label class="check"><input type="checkbox" name="premium" value="ja" /><span>Ich interessiere mich für eine Premium-Platzierung: oben im Verzeichnis und mit Rückruf-Funktion (unverbindlich).</span></label></div>
           </div>
         </fieldset>
         <FormFooter submit="Registrierung absenden" />

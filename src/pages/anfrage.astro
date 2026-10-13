@@ -16,6 +16,10 @@ import { objektarten, turnusOptionen } from '../data/leistungen.ts';
     <div class="wrap">
       <form class="form-card" method="post" action="/api/anfrage" data-enhance>
         <div class="form-errors" role="alert"></div>
+        <div class="wunsch" data-wunsch hidden>
+          <p><strong>Ihre Anfrage geht an diese Firmen.</strong> Weitere passende Firmen aus Ihrer Region schlagen wir Ihnen dazu vor.</p>
+          <ul></ul>
+        </div>
         <fieldset>
           <legend>1. Welche Leistungen brauchen Sie?<small>Mehrfachauswahl möglich</small></legend>
           <ServiceChoices />
@@ -52,6 +56,21 @@ import { objektarten, turnusOptionen } from '../data/leistungen.ts';
             <div>
               <label for="ort">Ort</label>
               <input type="text" id="ort" name="ort" autocomplete="address-level2" />
+            </div>
+            <div class="full">
+              <label for="adresse">Straße und Hausnummer des Objekts <span class="opt">(optional, für die Besichtigung)</span></label>
+              <input type="text" id="adresse" name="adresse" autocomplete="street-address" />
+            </div>
+            <div>
+              <label for="dauer">Vertragsdauer <span class="opt">(optional)</span></label>
+              <select id="dauer" name="dauer">
+                <option value="">Bitte wählen</option>
+                <option>Einmalig</option><option>Bis 12 Monate</option><option>12 bis 24 Monate</option><option>Unbefristet</option>
+              </select>
+            </div>
+            <div>
+              <label for="hygiene">Hygienevorgaben <span class="opt">(optional)</span></label>
+              <input type="text" id="hygiene" name="hygiene" placeholder="z. B. Hygieneplan Praxis, HACCP, Reinraum" />
             </div>
             <div class="full">
               <label for="nachricht">Besonderheiten <span class="opt">(optional)</span></label>

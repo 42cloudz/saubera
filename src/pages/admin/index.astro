@@ -2,7 +2,7 @@
 // The team's view of all requests and sign-ups, with matching companies per request.
 import Base from '../../layouts/Base.astro';
 import { checkAdmin } from '../../lib/auth.ts';
-import { listAnfragen, listDienstleister, STATUS, type Row } from '../../lib/db.ts';
+import { listAnfragen, listDienstleister, listRueckrufe, STATUS, type Row } from '../../lib/db.ts';
 import { match } from '../../lib/matching.ts';
 import { leistungBySlug } from '../../data/leistungen.ts';
 
@@ -13,7 +13,9 @@ if (denied) return denied;
 Astro.response.headers.set('Cache-Control', 'no-store');
 Astro.response.headers.set('X-Robots-Tag', 'noindex');
 
-const tab = Astro.url.searchParams.get('t') === 'dienstleister' ? 'dienstleister' : 'anfragen';
+const t = Astro.url.searchParams.get('t');
+const tab = t === 'dienstleister' || t === 'rueckrufe' ? t : 'anfragen';
+const rueckrufe = listRueckrufe();
 const anfragen = listAnfragen();
 const dienstleister = listDienstleister();
 const split = (s: unknown) => (typeof s === 'string' && s ? s.split(',') : []);
@@ -30,6 +32,7 @@ const matchesFor = (a: Row) => match({ plz: String(a.plz), leistungen: split(a.l
       <div class="admin-tabs">
         <a class={`btn ${tab === 'anfragen' ? 'btn-primary' : 'btn-ghost'}`} href="/admin">Anfragen ({anfragen.length})</a>
         <a class={`btn ${tab === 'dienstleister' ? 'btn-primary' : 'btn-ghost'}`} href="/admin?t=dienstleister">Dienstleister ({dienstleister.length})</a>
+        <a class={`btn ${tab === 'rueckrufe' ? 'btn-primary' : 'btn-ghost'}`} href="/admin?t=rueckrufe">Rückrufe ({rueckrufe.length})</a>
         <a class="btn btn-ghost" href={`/admin/export.csv?t=${tab}`}>CSV exportieren</a>
       </div>
       <div class="table-scroll">
@@ -39,16 +42,38 @@ const matchesFor = (a: Row) => match({ plz: String(a.plz), leistungen: split(a.l
             <tbody>
               {anfragen.map((a) => (
                 <tr>
-                  <td>{a.id}</td>
+                  <td>{a.id}{a.ref && <><br /><span class="num">{a.ref}</span></>}</td>
                   <td>{a.created_at}</td>
                   <td><strong>{a.firma}</strong><br />{a.ansprechpartner}<br /><a href={`mailto:${a.email}`}>{a.email}</a>{a.telefon && <><br />{a.telefon}</>}</td>
-                  <td>{a.plz} {a.ort}<br />{a.objektart}{a.flaeche_m2 && <>, {a.flaeche_m2} m²</>}<br />{a.turnus}{a.start && <>, Start: {a.start}</>}{a.nachricht && <><br /><em>{a.nachricht}</em></>}</td>
+                  <td>{a.plz} {a.ort}<br />{a.objektart}{a.flaeche_m2 && <>, {a.flaeche_m2} m²</>}<br />{a.turnus}{a.start && <>, Start: {a.start}</>}{a.dauer && <>, {a.dauer}</>}{a.adresse && <><br />{a.adresse}</>}{a.hygiene && <><br />Hygiene: {a.hygiene}</>}{a.nachricht && <><br /><em>{a.nachricht}</em></>}</td>
                   <td>{names(a.leistungen)}</td>
-                  <td class="matches">{matchesFor(a).map((p) => <div>#{p.id} {p.firma} {p.premium && <span class="badge">Premium</span>}</div>)}</td>
+                  <td class="matches">{a.wunschfirmen && <div><strong>Wunsch:</strong> {a.wunschfirmen}</div>}{matchesFor(a).map((p) => <div>#{p.id} {p.firma} {p.premium && <span class="badge">Premium</span>}</div>)}</td>
                   <td>
                     <form method="post" action="/admin/status">
                       <input type="hidden" name="table" value="anfragen" /><input type="hidden" name="id" value={a.id} />
                       <select name="status">{STATUS.map((s) => <option selected={s === a.status}>{s}</option>)}</select>
+                      <button class="btn btn-ghost" type="submit">OK</button>
+                    </form>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        ) : tab === 'rueckrufe' ? (
+          <table>
+            <thead><tr><th>#</th><th>Eingang</th><th>Für Firma</th><th>Anrufer</th><th>Anliegen</th><th>Status</th></tr></thead>
+            <tbody>
+              {rueckrufe.map((r) => (
+                <tr>
+                  <td>{r.id}</td>
+                  <td>{r.created_at}</td>
+                  <td>{r.dienstleister}</td>
+                  <td><strong>{r.name}</strong>{r.firma && <>, {r.firma}</>}<br /><a href={`tel:${String(r.telefon).replace(/[^\d+]/g, '')}`}>{r.telefon}</a></td>
+                  <td>{r.anliegen}</td>
+                  <td>
+                    <form method="post" action="/admin/status">
+                      <input type="hidden" name="table" value="rueckrufe" /><input type="hidden" name="id" value={r.id} />
+                      <select name="status">{STATUS.map((s) => <option selected={s === r.status}>{s}</option>)}</select>
                       <button class="btn btn-ghost" type="submit">OK</button>
                     </form>
                   </td>
@@ -64,7 +89,7 @@ const matchesFor = (a: Row) => match({ plz: String(a.plz), leistungen: split(a.l
                 <tr>
                   <td>{d.id}</td>
                   <td>{d.created_at}</td>
-                  <td><strong>{d.firma}</strong> {d.premium === 1 && <span class="badge">Premium-Interesse</span>}<br />{d.ansprechpartner}<br /><a href={`mailto:${d.email}`}>{d.email}</a>{d.telefon && <><br />{d.telefon}</>}</td>
+                  <td><strong>{d.status === 'freigeschaltet' ? <a href={`/firmen/${d.slug}`}>{d.firma}</a> : d.firma}</strong> {d.premium === 1 && <span class="badge">Premium</span>}{d.demo === 1 && <span class="badge">Beispiel</span>}<br />{d.ansprechpartner}<br /><a href={`mailto:${d.email}`}>{d.email}</a>{d.telefon && <><br />{d.telefon}</>}</td>
                   <td>{d.plz} {d.ort}<br />{d.radius_km} km</td>
                   <td>{names(d.leistungen)}</td>
                   <td>{d.mitarbeitende && <>{d.mitarbeitende} MA<br /></>}{d.website && <a href={String(d.website)} rel="noopener noreferrer" target="_blank">{d.website}</a>}{d.nachricht && <><br /><em>{d.nachricht}</em></>}</td>
@@ -73,6 +98,10 @@ const matchesFor = (a: Row) => match({ plz: String(a.plz), leistungen: split(a.l
                       <input type="hidden" name="table" value="dienstleister" /><input type="hidden" name="id" value={d.id} />
                       <select name="status">{STATUS.map((s) => <option selected={s === d.status}>{s}</option>)}</select>
                       <button class="btn btn-ghost" type="submit">OK</button>
+                    </form>
+                    <form method="post" action="/admin/status">
+                      <input type="hidden" name="table" value="premium" /><input type="hidden" name="id" value={d.id} /><input type="hidden" name="premium" value={d.premium === 1 ? '0' : '1'} />
+                      <button class="btn btn-ghost" type="submit">{d.premium === 1 ? 'Premium aus' : 'Premium an'}</button>
                     </form>
                   </td>
                 </tr>

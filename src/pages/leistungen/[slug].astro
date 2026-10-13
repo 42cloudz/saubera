@@ -5,6 +5,7 @@ import AdSlot from '../../components/AdSlot.astro';
 import PriceCalc from '../../components/PriceCalc.astro';
 import { leistungen, type Leistung } from '../../data/leistungen.ts';
 import { einheitspreis } from '../../lib/preise.ts';
+import { bundeslaender, orteImLand } from '../../data/orte.ts';
 
 export function getStaticPaths() {
   return leistungen.map((l) => ({ params: { slug: l.slug }, props: { l } }));
@@ -45,6 +46,14 @@ const ld = {
     <div class="wrap mt-l"><AdSlot context={l.name} /></div>
   </section>
   <section class="section section-soft">
+    <div class="wrap editorial">
+      <h2>{l.name} in Ihrer Stadt</h2>
+      <dl class="laender editorial-body">
+        {bundeslaender.map((b) => <><dt>{b}</dt><dd>{orteImLand(b).map((o, i) => <>{i > 0 && ', '}<a href={`/leistungen/${l.slug}/${o.slug}`}>{o.name}</a></>)}</dd></>)}
+      </dl>
+    </div>
+  </section>
+  <section class="section">
     <div class="wrap editorial">
       <h2>Weitere Leistungen</h2>
       <ul class="link-list editorial-body">{others.map((o) => <li><a href={`/leistungen/${o.slug}`}>{o.name}</a> <span>{einheitspreis(o)}</span></li>)}</ul>

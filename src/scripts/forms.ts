@@ -19,18 +19,22 @@ for (const form of document.querySelectorAll<HTMLFormElement>('form[data-enhance
     const input = form.querySelector<HTMLInputElement>(`input[name="leistungen"][value="${CSS.escape(preset)}"]`);
     if (input) input.checked = true;
   }
-  // Values handed over from the price calculator (flaeche_m2, turnus, plz).
-  for (const name of ['flaeche_m2', 'turnus', 'plz']) {
+  // Values handed over from the price calculator and the local pages.
+  for (const name of ['flaeche_m2', 'turnus', 'plz', 'ort', 'objektart']) {
     const v = params.get(name);
     const field = form.querySelector<HTMLInputElement | HTMLSelectElement>(`[name="${name}"]`);
     if (v && field) field.value = v;
   }
+  // Companies the request should go to: from ?firmen=a,b (profile, bookmark list).
+  const wunsch = form.querySelector<HTMLElement>('[data-wunsch]');
+  const slugs = (params.get('firmen') ?? '').split(',').filter((x) => /^[a-z0-9-]{1,80}$/.test(x)).slice(0, 20);
+  if (wunsch && slugs.length) void showWunsch(wunsch, slugs);
   const fehler = params.get('fehler');
   if (fehler) showErrors([fehler]);
 
   form.addEventListener('submit', async (event) => {
     event.preventDefault();
-    if (!form.querySelector('input[name="leistungen"]:checked')) {
+    if (form.querySelector('input[name="leistungen"]') && !form.querySelector('input[name="leistungen"]:checked')) {
       showErrors(['Bitte wählen Sie mindestens eine Leistung.']);
       return;
     }
@@ -55,4 +59,28 @@ for (const form of document.querySelectorAll<HTMLFormElement>('form[data-enhance
       button.textContent = label ?? 'Absenden';
     }
   });
+}
+
+async function showWunsch(box: HTMLElement, slugs: string[]) {
+  try {
+    const res = await fetch(`/api/firmen?slugs=${encodeURIComponent(slugs.join(','))}`);
+    const firmen = (await res.json()) as { slug: string; firma: string; ort: string | null }[];
+    if (!firmen.length) return;
+    const list = box.querySelector('ul')!;
+    for (const f of firmen) {
+      const li = document.createElement('li');
+      const label = document.createElement('label');
+      label.className = 'check';
+      const input = document.createElement('input');
+      Object.assign(input, { type: 'checkbox', name: 'wunschfirmen', value: f.slug, checked: true });
+      const span = document.createElement('span');
+      span.textContent = f.ort ? `${f.firma}, ${f.ort}` : f.firma;
+      label.append(input, span);
+      li.append(label);
+      list.append(li);
+    }
+    box.hidden = false;
+  } catch {
+    /* the request still works, it just goes to all matching companies */
+  }
 }
