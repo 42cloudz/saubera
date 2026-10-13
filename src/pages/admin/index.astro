@@ -1,0 +1,86 @@
+---
+// The team's view of all requests and sign-ups, with matching companies per request.
+import Base from '../../layouts/Base.astro';
+import { checkAdmin } from '../../lib/auth.ts';
+import { listAnfragen, listDienstleister, STATUS, type Row } from '../../lib/db.ts';
+import { match } from '../../lib/matching.ts';
+import { leistungBySlug } from '../../data/leistungen.ts';
+
+export const prerender = false;
+
+const denied = checkAdmin(Astro.request);
+if (denied) return denied;
+Astro.response.headers.set('Cache-Control', 'no-store');
+Astro.response.headers.set('X-Robots-Tag', 'noindex');
+
+const tab = Astro.url.searchParams.get('t') === 'dienstleister' ? 'dienstleister' : 'anfragen';
+const anfragen = listAnfragen();
+const dienstleister = listDienstleister();
+const split = (s: unknown) => (typeof s === 'string' && s ? s.split(',') : []);
+const names = (s: unknown) => split(s).map((x) => leistungBySlug.get(x)?.name ?? x).join(', ');
+const providers = dienstleister
+  .filter((d) => d.status !== 'abgelehnt')
+  .map((d) => ({ id: Number(d.id), plz: String(d.plz), radius_km: d.radius_km === null ? null : Number(d.radius_km), leistungen: split(d.leistungen), premium: d.premium === 1, firma: String(d.firma) }));
+const matchesFor = (a: Row) => match({ plz: String(a.plz), leistungen: split(a.leistungen) }, providers).slice(0, 5);
+---
+<Base title="Admin">
+  <section class="section admin">
+    <div class="wrap">
+      <h1>Saubera Admin</h1>
+      <div class="admin-tabs">
+        <a class={`btn ${tab === 'anfragen' ? 'btn-primary' : 'btn-ghost'}`} href="/admin">Anfragen ({anfragen.length})</a>
+        <a class={`btn ${tab === 'dienstleister' ? 'btn-primary' : 'btn-ghost'}`} href="/admin?t=dienstleister">Dienstleister ({dienstleister.length})</a>
+        <a class="btn btn-ghost" href={`/admin/export.csv?t=${tab}`}>CSV exportieren</a>
+      </div>
+      <div class="table-scroll">
+        {tab === 'anfragen' ? (
+          <table>
+            <thead><tr><th>#</th><th>Eingang</th><th>Firma / Kontakt</th><th>Objekt</th><th>Leistungen</th><th>Passende Firmen</th><th>Status</th></tr></thead>
+            <tbody>
+              {anfragen.map((a) => (
+                <tr>
+                  <td>{a.id}</td>
+                  <td>{a.created_at}</td>
+                  <td><strong>{a.firma}</strong><br />{a.ansprechpartner}<br /><a href={`mailto:${a.email}`}>{a.email}</a>{a.telefon && <><br />{a.telefon}</>}</td>
+                  <td>{a.plz} {a.ort}<br />{a.objektart}{a.flaeche_m2 && <>, {a.flaeche_m2} m²</>}<br />{a.turnus}{a.start && <>, Start: {a.start}</>}{a.nachricht && <><br /><em>{a.nachricht}</em></>}</td>
+                  <td>{names(a.leistungen)}</td>
+                  <td class="matches">{matchesFor(a).map((p) => <div>#{p.id} {p.firma} {p.premium && <span class="badge">Premium</span>}</div>)}</td>
+                  <td>
+                    <form method="post" action="/admin/status">
+                      <input type="hidden" name="table" value="anfragen" /><input type="hidden" name="id" value={a.id} />
+                      <select name="status">{STATUS.map((s) => <option selected={s === a.status}>{s}</option>)}</select>
+                      <button class="btn btn-ghost" type="submit">OK</button>
+                    </form>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        ) : (
+          <table>
+            <thead><tr><th>#</th><th>Eingang</th><th>Firma / Kontakt</th><th>Gebiet</th><th>Leistungen</th><th>Infos</th><th>Status</th></tr></thead>
+            <tbody>
+              {dienstleister.map((d) => (
+                <tr>
+                  <td>{d.id}</td>
+                  <td>{d.created_at}</td>
+                  <td><strong>{d.firma}</strong> {d.premium === 1 && <span class="badge">Premium-Interesse</span>}<br />{d.ansprechpartner}<br /><a href={`mailto:${d.email}`}>{d.email}</a>{d.telefon && <><br />{d.telefon}</>}</td>
+                  <td>{d.plz} {d.ort}<br />{d.radius_km} km</td>
+                  <td>{names(d.leistungen)}</td>
+                  <td>{d.mitarbeitende && <>{d.mitarbeitende} MA<br /></>}{d.website && <a href={String(d.website)} rel="noopener noreferrer" target="_blank">{d.website}</a>}{d.nachricht && <><br /><em>{d.nachricht}</em></>}</td>
+                  <td>
+                    <form method="post" action="/admin/status">
+                      <input type="hidden" name="table" value="dienstleister" /><input type="hidden" name="id" value={d.id} />
+                      <select name="status">{STATUS.map((s) => <option selected={s === d.status}>{s}</option>)}</select>
+                      <button class="btn btn-ghost" type="submit">OK</button>
+                    </form>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
+      </div>
+    </div>
+  </section>
+</Base>

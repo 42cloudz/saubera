@@ -1,0 +1,17 @@
+---
+interface Props { title?: string; text?: string; href?: string; label?: string }
+const {
+  title = 'Bereit für eine Reinigung, um die Sie sich nicht mehr kümmern müssen?',
+  text = 'Beschreiben Sie Ihr Objekt in zwei Minuten. Wir melden uns mit passenden Angeboten.',
+  href = '/anfrage',
+  label = 'Kostenlos Angebote erhalten',
+} = Astro.props;
+---
+<section class="section">
+  <div class="wrap">
+    <div class="cta-band">
+      <div><h2>{title}</h2><p>{text}</p></div>
+      <a class="btn btn-mint" href={href}>{label}</a>
+    </div>
+  </div>
+</section>

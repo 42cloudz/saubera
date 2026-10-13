@@ -1,0 +1,43 @@
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: redirect-https
+  namespace: saubera
+spec:
+  redirectScheme:
+    scheme: https
+    permanent: true
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: web-http
+  namespace: saubera
+spec:
+  entryPoints:
+    - web
+  routes:
+    - match: Host(`saubera.42cloudz.com`)
+      kind: Rule
+      middlewares:
+        - name: redirect-https
+      services:
+        - name: web
+          port: 80
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: web
+  namespace: saubera
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host(`saubera.42cloudz.com`)
+      kind: Rule
+      services:
+        - name: web
+          port: 80
+  tls:
+    secretName: saubera-tls

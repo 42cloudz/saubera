@@ -1,0 +1,22 @@
+---
+import Base from '../layouts/Base.astro';
+import Operator from '../components/Operator.astro';
+import { site } from '../data/site.ts';
+const o = site.operator;
+---
+<Base title="Impressum">
+  <section class="section">
+    <div class="wrap prose">
+      <h1>Impressum</h1>
+      <h2>Angaben gemäß § 5 DDG</h2>
+      <Operator />
+      {o?.represented && <p>Vertreten durch: {o.represented}</p>}
+      {o?.register ? <p>{o.register}</p> : <p><span class="todo">Registergericht und Registernummer folgen</span></p>}
+      {o?.vatId ? <p>USt-IdNr.: {o.vatId}</p> : <p><span class="todo">USt-IdNr. folgt</span></p>}
+      <h2>Verbraucherstreitbeilegung</h2>
+      <p>Saubera richtet sich ausschließlich an Unternehmen. Wir sind nicht bereit und nicht verpflichtet, an Streitbeilegungsverfahren vor einer Verbraucherschlichtungsstelle teilzunehmen.</p>
+      <h2>Haftung für Inhalte von Partnern</h2>
+      <p>Saubera vermittelt zwischen Auftraggebern und Reinigungsfirmen. Verträge über Reinigungsleistungen kommen direkt zwischen diesen zustande. Für Angaben in Profilen und Angeboten sind die jeweiligen Partner verantwortlich.</p>
+    </div>
+  </section>
+</Base>

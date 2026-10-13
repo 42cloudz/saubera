@@ -1,0 +1,12 @@
+---
+import Icon from './Icon.astro';
+import { leistungen } from '../data/leistungen.ts';
+---
+<div class="choices">
+  {leistungen.map((l) => (
+    <label class="choice">
+      <input type="checkbox" name="leistungen" value={l.slug} />
+      <span><Icon name={l.icon} />{l.name}</span>
+    </label>
+  ))}
+</div>

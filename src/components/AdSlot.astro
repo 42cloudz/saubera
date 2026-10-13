@@ -1,0 +1,13 @@
+---
+// A paid placement. Until it is sold it advertises itself. Shown on service pages next to the content.
+interface Props { context?: string }
+const { context } = Astro.props;
+---
+<aside class="ad-slot" aria-label="Anzeige">
+  <div>
+    <div class="ad-label">Anzeige</div>
+    <strong>Ihre Reinigungsfirma hier{context ? ` – bei ${context}` : ''}</strong>
+    <p>Premium-Partner erscheinen auf den passenden Leistungsseiten und weiter oben bei Vermittlungen.</p>
+  </div>
+  <a class="btn btn-ghost" href="/werben">Platz buchen</a>
+</aside>

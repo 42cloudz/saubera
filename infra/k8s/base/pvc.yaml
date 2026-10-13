@@ -1,0 +1,14 @@
+# Requests and sign-ups (SQLite). Without storageClassName the cluster default applies; in Markus'
+# cluster that is hcloud-volumes, which is never smaller than 10 GB (see mondaymustdie).
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: saubera-data
+  annotations:
+    # Losing the claim loses every request. Argo CD never prunes or deletes it on its own.
+    argocd.argoproj.io/sync-options: Prune=false,Delete=false
+spec:
+  accessModes: [ReadWriteOnce]
+  resources:
+    requests:
+      storage: 10Gi

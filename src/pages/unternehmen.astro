@@ -1,0 +1,83 @@
+---
+import Base from '../layouts/Base.astro';
+import Icon from '../components/Icon.astro';
+import CtaBand from '../components/CtaBand.astro';
+import Faq from '../components/Faq.astro';
+
+const zielgruppen = [
+  { icon: 'building', t: 'Büros und Verwaltungen', d: 'Vom kleinen Team bis zum Firmensitz mit mehreren Etagen.' },
+  { icon: 'cross', t: 'Praxen und Gesundheit', d: 'Hygienegerecht und dokumentiert, nach Ihrem Hygieneplan.' },
+  { icon: 'stairs', t: 'Hausverwaltungen', d: 'Treppenhäuser und Gemeinschaftsflächen mit Nachweis für Eigentümer.' },
+  { icon: 'factory', t: 'Industrie und Logistik', d: 'Passend zum Schichtplan, mit Maschinen und Arbeitsschutz.' },
+  { icon: 'cup', t: 'Gastronomie und Hotels', d: 'Küchen-Grundreinigung, Housekeeping und Spa.' },
+  { icon: 'pin', t: 'Filialisten', d: 'Mehrere Standorte, ein Ansprechpartner, ein Standard.' },
+];
+const faq = [
+  { q: 'Muss ich das günstigste Angebot nehmen?', a: 'Nein. Sie entscheiden frei. Weil alle Angebote auf demselben Leistungsverzeichnis beruhen, sehen Sie auf einen Blick, warum ein Angebot teurer oder günstiger ist.' },
+  { q: 'Mit wem schließe ich den Vertrag?', a: 'Den Reinigungsvertrag schließen Sie direkt mit dem Dienstleister. Saubera begleitet die Zusammenarbeit und bleibt Ihr Ansprechpartner bei Problemen.' },
+  { q: 'Wie schnell geht es los?', a: 'Das hängt von Leistung und Region ab. Einmalige Leistungen wie Bau- oder Grundreinigung sind oft innerhalb weniger Tage möglich.' },
+  { q: 'Können wir mehrere Standorte bündeln?', a: 'Ja. Beschreiben Sie in der Anfrage Ihre Standorte, wir koordinieren passende Partner je Region.' },
+];
+---
+<Base title="Reinigungsfirma finden für Ihr Unternehmen" description="So funktioniert Saubera für Auftraggeber: Leistungsverzeichnis anlegen, vergleichbare Angebote erhalten, im laufenden Betrieb betreut werden.">
+  <section class="page-head">
+    <div class="wrap">
+      <div class="crumbs"><a href="/">Start</a> / Für Unternehmen</div>
+      <h1>Die richtige Reinigungsfirma, und danach keine Sorgen mehr</h1>
+      <p class="lead">Saubera nimmt Ihnen Suche, Vergleich und Koordination ab. Für Auftraggeber kostenlos.</p>
+      <div class="btn-row mt-m"><a class="btn btn-primary" href="/anfrage">Jetzt Angebote anfragen</a></div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap split">
+      <div>
+        <span class="eyebrow">Das Leistungsverzeichnis</span>
+        <h2>Endlich Angebote, die man vergleichen kann</h2>
+        <p>Eine Reinigungsfirma rechnet nach Quadratmetern, die nächste nach Stunden, die dritte vergisst die Sanitärräume. Mit dem Saubera-Leistungsverzeichnis beschreiben Sie Ihr Objekt einmal strukturiert: Fläche, Räume, Leistungen, Intervalle.</p>
+        <p>Alle Anbieter kalkulieren auf dieser Grundlage. Sie vergleichen Preise statt Interpretationen.</p>
+      </div>
+      <div class="card">
+        <h3>Was hinein gehört</h3>
+        <ul class="check-list">
+          <li>Objektart und Fläche</li>
+          <li>Raumarten, zum Beispiel Büro, Sanitär, Küche oder Lager</li>
+          <li>Leistungen je Raumart</li>
+          <li>Turnus und Reinigungszeiten</li>
+          <li>Besonderheiten wie Zugang, Glasflächen oder Hygieneplan</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section-dark">
+    <div class="wrap">
+      <span class="eyebrow">Nach dem Start</span>
+      <h2>Betreuung im laufenden Betrieb</h2>
+      <p class="lead">Die meisten Probleme mit Reinigungsfirmen entstehen nicht bei der Auswahl, sondern im dritten Monat. Darum bleiben wir dabei.</p>
+      <div class="grid grid-4 mt-l">
+        <div class="card"><Icon name="clipboard" class="icon" /><h3>Leistungsnachweise</h3><p>Dokumentation jedes Einsatzes, jederzeit einsehbar.</p></div>
+        <div class="card"><Icon name="star" class="icon" /><h3>Bewertung pro Einsatz</h3><p>Probleme fallen früh auf und werden direkt geklärt.</p></div>
+        <div class="card"><Icon name="swap" class="icon" /><h3>Vertretung</h3><p>Bei Krankheit oder Urlaub organisieren wir Ersatz.</p></div>
+        <div class="card"><Icon name="users" class="icon" /><h3>Ein Ansprechpartner</h3><p>Für alle Leistungen und Standorte.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap">
+      <div class="center"><span class="eyebrow">Für wen</span><h2>Für alle, die Flächen sauber halten müssen</h2></div>
+      <div class="grid grid-3 mt-l">
+        {zielgruppen.map((z) => <div class="card"><Icon name={z.icon} class="icon" /><h3>{z.t}</h3><p>{z.d}</p></div>)}
+      </div>
+    </div>
+  </section>
+
+  <section class="section section-soft">
+    <div class="wrap">
+      <div class="center mb-l"><h2>Fragen von Auftraggebern</h2></div>
+      <Faq items={faq} />
+    </div>
+  </section>
+  <CtaBand />
+</Base>

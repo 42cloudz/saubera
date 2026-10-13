@@ -1,0 +1,41 @@
+# Mirrors main to GitLab (42cloudz/saubera). There .gitlab-ci.yml builds on
+# the Hetzner runner and Argo CD deploys. Needs the repository secret
+# GITLAB_MIRROR_TOKEN (GitLab project access token, scope write_repository).
+# On pull requests it only checks with a dry run that the token can push.
+# Runs on the GitHub runner on the Hetzner server like mondaymustdie (label mmd-mirror),
+# so it costs no Actions minutes. The runner must be registered for this repository too (docs/deployment.md).
+name: Mirror to GitLab
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: mirror-to-gitlab-${{ github.event_name }}-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  mirror:
+    runs-on: [self-hosted, mmd-mirror]
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Push main to GitLab
+        env:
+          GITLAB_MIRROR_TOKEN: ${{ secrets.GITLAB_MIRROR_TOKEN }}
+          DRY_RUN: ${{ github.event_name == 'pull_request' && '--dry-run' || '' }}
+        run: |
+          if [ -z "$GITLAB_MIRROR_TOKEN" ]; then
+            echo "::error::Repository secret GITLAB_MIRROR_TOKEN fehlt"
+            exit 1
+          fi
+          git push $DRY_RUN "https://oauth2:${GITLAB_MIRROR_TOKEN}@gitlab.com/42cloudz/saubera.git" HEAD:refs/heads/main

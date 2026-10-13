@@ -1,0 +1,57 @@
+# Pipeline for Saubera, on the Hetzner runner like mondaymustdie and jobportal.
+# The code lives on GitHub (42cloudz/saubera); .github/workflows/mirror-to-gitlab.yml pushes every
+# commit on main here. build: the Docker build runs unit tests, typecheck and the production build,
+# then infra/smoke-test.sh, then the push to the registry. deploy: moves the CI-owned branch `deploy`
+# (main + new image tag), which Argo CD watches. Setup and troubleshooting: docs/deployment.md
+
+workflow:
+  rules:
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+
+stages:
+  - build
+  - deploy
+
+variables:
+  IMAGE_WEB: $CI_REGISTRY_IMAGE/web
+
+build-web:
+  stage: build
+  interruptible: true
+  tags: [hetzner]
+  before_script:
+    - echo "$CI_REGISTRY_PASSWORD" | docker login -u "$CI_REGISTRY_USER" --password-stdin "$CI_REGISTRY"
+  script:
+    - docker build --pull -t "$IMAGE_WEB:$CI_COMMIT_SHA" -t "$IMAGE_WEB:main-latest" .
+    - sh infra/smoke-test.sh "$IMAGE_WEB:$CI_COMMIT_SHA" "saubera-smoke-$CI_JOB_ID"
+    - docker push "$IMAGE_WEB:$CI_COMMIT_SHA"
+    - docker push "$IMAGE_WEB:main-latest"
+  after_script:
+    - docker rm -f "saubera-smoke-$CI_JOB_ID" || true
+    - docker rmi "$IMAGE_WEB:$CI_COMMIT_SHA" "$IMAGE_WEB:main-latest" || true
+    - docker image prune -f
+
+deploy-test:
+  stage: deploy
+  tags: [hetzner]
+  needs: [build-web]
+  resource_group: test
+  script:
+    - |
+      if [ -z "${DEPLOY_TOKEN:-}" ]; then
+        echo "DEPLOY_TOKEN fehlt (Settings > CI/CD > Variables; bei 'Protected' muss main geschützt sein)."
+        exit 1
+      fi
+    # Only the newest commit on main deploys. An older pipeline that finishes late stops here.
+    - git fetch --quiet origin "$CI_DEFAULT_BRANCH"
+    - |
+      if [ "$(git rev-parse FETCH_HEAD)" != "$CI_COMMIT_SHA" ]; then
+        echo "main ist schon weiter, die neuere Pipeline deployt."
+        exit 0
+      fi
+    - git checkout -B deploy "$CI_COMMIT_SHA"
+    - |
+      sed -i "s|newTag: .* # ci-web|newTag: $CI_COMMIT_SHA # ci-web|" infra/k8s/overlays/test/kustomization.yaml
+      grep -q "newTag: $CI_COMMIT_SHA # ci-web" infra/k8s/overlays/test/kustomization.yaml
+      git -c user.name="GitLab CI" -c user.email="ci@gitlab.com" commit -qam "deploy: web $CI_COMMIT_SHORT_SHA [skip ci]"
+    - git push --force -o ci.skip "https://oauth2:${DEPLOY_TOKEN}@gitlab.com/${CI_PROJECT_PATH}.git" HEAD:refs/heads/deploy

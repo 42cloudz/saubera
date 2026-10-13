@@ -1,0 +1,76 @@
+---
+import Base from '../layouts/Base.astro';
+import ServiceChoices from '../components/ServiceChoices.astro';
+import FormFooter from '../components/FormFooter.astro';
+import { objektarten, turnusOptionen } from '../data/leistungen.ts';
+---
+<Base title="Angebote für Ihre Reinigung anfragen" description="Beschreiben Sie Ihr Objekt und erhalten Sie vergleichbare Angebote geprüfter Reinigungsfirmen. Kostenlos und unverbindlich, nur für Unternehmen.">
+  <section class="page-head">
+    <div class="wrap">
+      <div class="crumbs"><a href="/">Start</a> / Anfrage</div>
+      <h1>Vergleichbare Angebote in zwei Minuten anfragen</h1>
+      <p class="lead">Je genauer Ihre Angaben, desto genauer die Angebote. Kostenlos und unverbindlich, nur für gewerbliche Auftraggeber.</p>
+    </div>
+  </section>
+  <section class="section">
+    <div class="wrap">
+      <form class="form-card" method="post" action="/api/anfrage" data-enhance>
+        <div class="form-errors" role="alert"></div>
+        <fieldset>
+          <legend>1. Welche Leistungen brauchen Sie?<small>Mehrfachauswahl möglich</small></legend>
+          <ServiceChoices />
+        </fieldset>
+        <fieldset>
+          <legend>2. Ihr Objekt<small>Daraus entsteht das Leistungsverzeichnis für alle Anbieter</small></legend>
+          <div class="form-grid">
+            <div>
+              <label for="objektart">Objektart</label>
+              <select id="objektart" name="objektart">
+                <option value="">Bitte wählen</option>
+                {objektarten.map((o) => <option>{o}</option>)}
+              </select>
+            </div>
+            <div>
+              <label for="flaeche_m2">Fläche in m² <span class="opt">(ungefähr)</span></label>
+              <input type="number" id="flaeche_m2" name="flaeche_m2" min="1" inputmode="numeric" placeholder="z. B. 400" />
+            </div>
+            <div>
+              <label for="turnus">Wie oft?</label>
+              <select id="turnus" name="turnus">
+                <option value="">Bitte wählen</option>
+                {turnusOptionen.map((t) => <option>{t}</option>)}
+              </select>
+            </div>
+            <div>
+              <label for="start">Gewünschter Start <span class="opt">(optional)</span></label>
+              <input type="text" id="start" name="start" placeholder="z. B. ab 1. November" />
+            </div>
+            <div>
+              <label for="plz">PLZ des Objekts</label>
+              <input type="text" id="plz" name="plz" required pattern="\d{5}" inputmode="numeric" maxlength="5" autocomplete="postal-code" />
+            </div>
+            <div>
+              <label for="ort">Ort</label>
+              <input type="text" id="ort" name="ort" autocomplete="address-level2" />
+            </div>
+            <div class="full">
+              <label for="nachricht">Besonderheiten <span class="opt">(optional)</span></label>
+              <textarea id="nachricht" name="nachricht" placeholder="z. B. Anzahl Räume und Sanitäranlagen, Reinigungszeiten, Zugang, Glasflächen in m²"></textarea>
+            </div>
+          </div>
+        </fieldset>
+        <fieldset>
+          <legend>3. Ihre Kontaktdaten</legend>
+          <div class="form-grid">
+            <div><label for="firma">Firma</label><input type="text" id="firma" name="firma" required autocomplete="organization" /></div>
+            <div><label for="ansprechpartner">Ansprechperson</label><input type="text" id="ansprechpartner" name="ansprechpartner" required autocomplete="name" /></div>
+            <div><label for="email">E-Mail</label><input type="email" id="email" name="email" required autocomplete="email" /></div>
+            <div><label for="telefon">Telefon <span class="opt">(optional)</span></label><input type="tel" id="telefon" name="telefon" autocomplete="tel" /></div>
+          </div>
+        </fieldset>
+        <FormFooter submit="Angebote anfordern" />
+        <p class="form-note">Ihre Anfrage geht nur an geprüfte Reinigungsfirmen, die Ihre Leistungen in Ihrer Region anbieten.</p>
+      </form>
+    </div>
+  </section>
+</Base>

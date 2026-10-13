@@ -1,0 +1,55 @@
+---
+import Base from '../../layouts/Base.astro';
+import Icon from '../../components/Icon.astro';
+import CtaBand from '../../components/CtaBand.astro';
+import Faq from '../../components/Faq.astro';
+
+const faq = [
+  { q: 'Was kostet die Registrierung?', a: 'Nichts. Sie zahlen weder für die Registrierung noch pro Anfrage. Optional können Sie eine Premium-Platzierung buchen, um sichtbarer zu sein.' },
+  { q: 'Welche Unterlagen brauche ich?', a: 'Gewerbeanmeldung oder Handelsregisterauszug und eine Betriebshaftpflichtversicherung. Zertifikate wie DIN EN ISO 9001 oder eine Innungsmitgliedschaft geben Sie gern zusätzlich an.' },
+  { q: 'Wie viele Anfragen bekomme ich?', a: 'Das hängt von Region und Leistungen ab. Sie erhalten nur Anfragen, die zu Ihrem Einsatzgebiet und Ihren Leistungen passen.' },
+  { q: 'Was sind BASETAGS?', a: 'Kleine Aufkleber in den Bereichen eines Objekts. Mitarbeitende Ihres Kunden scannen sie mit dem Handy und melden Nacharbeiten direkt an Sie, mit Ort und Grund. Sie reagieren schnell, bevor aus Kleinigkeiten eine Kündigung wird.' },
+];
+---
+<Base title="Neue Gewerbekunden für Reinigungsfirmen" description="Registrieren Sie Ihre Reinigungsfirma kostenlos bei Saubera: passende B2B-Anfragen ohne Lead-Gebühren, vergleichbare Leistungsverzeichnisse und Bewertungen pro Einsatz.">
+  <section class="page-head">
+    <div class="wrap">
+      <div class="crumbs"><a href="/">Start</a> / Für Reinigungsfirmen</div>
+      <h1>Mehr Gewerbekunden, ohne für Leads zu bezahlen</h1>
+      <p class="lead">Saubera bringt Sie mit Unternehmen zusammen, die eine Reinigungsfirma suchen. Kostenlos registrieren, passende Anfragen erhalten, gute Arbeit sichtbar machen.</p>
+      <div class="btn-row mt-m"><a class="btn btn-primary" href="/dienstleister/registrieren">Kostenlos registrieren</a><a class="btn btn-ghost" href="/werben">Premium-Platzierung</a></div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap">
+      <div class="grid grid-3">
+        <div class="card"><Icon name="euro" class="icon" /><h3>Keine Lead-Gebühren</h3><p>Viele Portale verkaufen dieselbe Anfrage an fünf Firmen. Bei Saubera zahlen Sie dafür nichts.</p></div>
+        <div class="card"><Icon name="list" class="icon" /><h3>Schneller kalkulieren</h3><p>Jede Anfrage kommt mit Leistungsverzeichnis: Fläche, Bereiche, Intervalle. Kein Rätselraten, weniger Besichtigungen.</p></div>
+        <div class="card"><Icon name="pin" class="icon" /><h3>Nur was passt</h3><p>Sie legen Leistungen und Einsatzradius fest. Anfragen außerhalb davon sehen Sie nicht.</p></div>
+        <div class="card"><Icon name="star" class="icon" /><h3>Reputation aufbauen</h3><p>Bewertungen pro Einsatz zeigen, dass Sie zuverlässig sind, und helfen bei der nächsten Ausschreibung.</p></div>
+        <div class="card"><Icon name="clipboard" class="icon" /><h3>Leistungsnachweise digital</h3><p>Einsätze abhaken statt Stundenzettel. Ihr Kunde sieht, was erledigt wurde, und Diskussionen werden seltener.</p></div>
+        <div class="card"><Icon name="sparkle" class="icon" /><h3>BASETAGS</h3><p>Ihr Kunde meldet Nacharbeiten per Scan direkt an Sie. Sie reagieren, bevor Ärger entsteht.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section-soft">
+    <div class="wrap">
+      <div class="center"><span class="eyebrow">Ablauf</span><h2>So werden Sie Saubera-Partner</h2></div>
+      <div class="grid grid-3 steps mt-l">
+        <div class="step"><h3>Profil anlegen</h3><p>Firma, Leistungen, Einsatzgebiet und Ansprechperson. Dauert drei Minuten.</p></div>
+        <div class="step"><h3>Prüfung</h3><p>Wir prüfen Gewerbenachweis und Versicherung und schalten Ihr Profil frei.</p></div>
+        <div class="step"><h3>Anfragen erhalten</h3><p>Passende Ausschreibungen landen bei Ihnen. Sie entscheiden, worauf Sie anbieten.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap">
+      <div class="center mb-l"><h2>Fragen von Reinigungsfirmen</h2></div>
+      <Faq items={faq} />
+    </div>
+  </section>
+  <CtaBand title="Bereit für neue Gewerbekunden?" text="Registrierung kostenlos, keine Mindestlaufzeit." href="/dienstleister/registrieren" label="Jetzt registrieren" />
+</Base>

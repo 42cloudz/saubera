@@ -1,0 +1,16 @@
+---
+import Icon from './Icon.astro';
+import { leistungen } from '../data/leistungen.ts';
+interface Props { limit?: number }
+const items = Astro.props.limit ? leistungen.slice(0, Astro.props.limit) : leistungen;
+---
+<div class="grid grid-4">
+  {items.map((l) => (
+    <a class="card card-link" href={`/leistungen/${l.slug}`}>
+      <Icon name={l.icon} class="icon" />
+      <h3>{l.name}</h3>
+      <p>{l.kurz}</p>
+      <span class="more">Mehr erfahren →</span>
+    </a>
+  ))}
+</div>

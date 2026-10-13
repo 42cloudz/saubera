@@ -1,0 +1,21 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: saubera-test
+  namespace: argocd
+spec:
+  project: saubera
+  source:
+    repoURL: https://gitlab.com/42cloudz/saubera.git
+    # CI-owned branch: main plus the current image tag (see .gitlab-ci.yml).
+    targetRevision: deploy
+    path: infra/k8s/overlays/test
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: saubera
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true

@@ -1,0 +1,15 @@
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: saubera
+  namespace: argocd
+spec:
+  description: Saubera (saubera.42cloudz.com)
+  sourceRepos:
+    - https://gitlab.com/42cloudz/saubera.git
+  destinations:
+    - server: https://kubernetes.default.svc
+      namespace: saubera
+  clusterResourceWhitelist:
+    - group: ""
+      kind: Namespace

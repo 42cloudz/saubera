@@ -1,0 +1,80 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: web
+  labels:
+    app: web
+spec:
+  # SQLite on a ReadWriteOnce volume: exactly one pod, and Recreate so a rollout never runs two.
+  replicas: 1
+  strategy:
+    type: Recreate
+  revisionHistoryLimit: 3
+  selector:
+    matchLabels:
+      app: web
+  template:
+    metadata:
+      labels:
+        app: web
+    spec:
+      imagePullSecrets:
+        - name: gitlab-regcred
+      securityContext:
+        runAsNonRoot: true
+        # The user "node" of the Node image; the volume belongs to its group.
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: web
+          # Tag is set per environment in the overlay (kustomize images, written by CI).
+          image: registry.gitlab.com/42cloudz/saubera/web:latest
+          ports:
+            - name: http
+              containerPort: 8080
+          env:
+            - name: DATA_DIR
+              value: /data
+            # Admin login and mail notifications. The Secret is made by hand and never lands in git
+            # (docs/deployment.md). Without it the site runs, /admin answers 404 and no mail goes out.
+            - name: ADMIN_PASSWORD
+              valueFrom:
+                secretKeyRef: { name: saubera-secrets, key: ADMIN_PASSWORD, optional: true }
+            - name: SMTP_URL
+              valueFrom:
+                secretKeyRef: { name: saubera-secrets, key: SMTP_URL, optional: true }
+            - name: NOTIFY_EMAIL
+              valueFrom:
+                secretKeyRef: { name: saubera-secrets, key: NOTIFY_EMAIL, optional: true }
+            - name: MAIL_FROM
+              valueFrom:
+                secretKeyRef: { name: saubera-secrets, key: MAIL_FROM, optional: true }
+          readinessProbe:
+            httpGet: { path: /api/health, port: 8080 }
+            periodSeconds: 5
+          livenessProbe:
+            httpGet: { path: /healthz, port: 8080 }
+            initialDelaySeconds: 5
+            periodSeconds: 20
+          resources:
+            requests: { cpu: 20m, memory: 64Mi }
+            limits: { memory: 256Mi }
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop: [ALL]
+          volumeMounts:
+            - name: data
+              mountPath: /data
+            - name: tmp
+              mountPath: /tmp
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: saubera-data
+        - name: tmp
+          emptyDir: {}

@@ -1,0 +1,14 @@
+---
+// Honeypot, privacy consent and submit button, shared by both forms.
+interface Props { submit: string }
+---
+<div class="hp" aria-hidden="true">
+  <label for="website_url">Bitte leer lassen</label>
+  <input type="text" id="website_url" name="website_url" tabindex="-1" autocomplete="off" />
+</div>
+<label class="check">
+  <input type="checkbox" name="datenschutz" value="ja" required />
+  <span>Ich habe die <a href="/datenschutz" target="_blank">Datenschutzhinweise</a> gelesen. Meine Angaben werden gespeichert und nur für die Vermittlung über Saubera verwendet.</span>
+</label>
+<div class="btn-row mt-m"><button class="btn btn-primary" type="submit">{Astro.props.submit}</button></div>
+<script>import '../scripts/forms.ts';</script>
