@@ -66,7 +66,7 @@ const faq = [
 
   <section class="section">
     <div class="wrap">
-      <div class="center"><span class="eyebrow">Für wen</span><h2>Für alle, die Flächen sauber halten müssen</h2></div>
+      <div class="section-head"><span class="eyebrow">Für wen</span><h2>Für alle, die Flächen sauber halten müssen</h2></div>
       <div class="grid grid-3 mt-l">
         {zielgruppen.map((z) => <div class="card"><Icon name={z.icon} class="icon" /><h3>{z.t}</h3><p>{z.d}</p></div>)}
       </div>
@@ -75,7 +75,7 @@ const faq = [
 
   <section class="section section-soft">
     <div class="wrap">
-      <div class="center mb-l"><h2>Fragen von Auftraggebern</h2></div>
+      <div class="section-head mb-l"><h2>Fragen von Auftraggebern</h2></div>
       <Faq items={faq} />
     </div>
   </section>
