@@ -187,7 +187,7 @@ p { margin: 0 0 1em; }
 .table-scroll { overflow-x: auto; }
 
 /* FAQ */
-.faq { max-width: 860px; margin: 0 auto; border-top: 2px solid var(--ink); }
+.faq { max-width: 860px; margin: 0; border-top: 2px solid var(--ink); }
 .faq details { border-bottom: 1px solid var(--line); }
 .faq summary { cursor: pointer; list-style: none; font-weight: 600; font-size: 1.05rem; padding: 20px 48px 20px 0; position: relative; }
 .faq summary::-webkit-details-marker { display: none; }
