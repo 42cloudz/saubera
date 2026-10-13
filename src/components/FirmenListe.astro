@@ -1,0 +1,54 @@
+---
+// Search results: one card per company. Premium partners come first with a yellow edge and can be
+// asked to call back. The bookmark button works with src/scripts/merkliste.ts.
+import type { Firma } from '../lib/db.ts';
+import { leistungBySlug } from '../data/leistungen.ts';
+import { monogram } from '../lib/firmen.ts';
+
+interface Props { firmen: Firma[]; leistung?: string | null; wo?: string | null }
+const { firmen, leistung, wo } = Astro.props;
+const chips = (f: Firma) => {
+  const all = f.leistungen.map((s) => leistungBySlug.get(s)).filter((l) => l !== undefined);
+  const sorted = [...all.filter((l) => l.slug === leistung), ...all.filter((l) => l.slug !== leistung)];
+  return { shown: sorted.slice(0, 4), more: Math.max(0, sorted.length - 4) };
+};
+const anfrage = leistung ? `/anfrage?leistung=${leistung}` : '/anfrage';
+---
+{firmen.length === 0 ? (
+  <div class="empty">
+    <p class="empty-title">Noch keine passende Firma im Verzeichnis{wo ? ` für ${wo}` : ''}.</p>
+    <p>Schicken Sie uns Ihre Anfrage trotzdem. Wir suchen passende Betriebe für Sie heraus, auch außerhalb des Verzeichnisses.</p>
+    <a class="btn btn-primary" href={anfrage}>Angebote anfragen</a>
+  </div>
+) : (
+  <ul class="results">
+    {firmen.map((f) => {
+      const c = chips(f);
+      return (
+        <li class:list={['result', { 'is-premium': f.premium }]}>
+          <a class="result-mono" href={`/firmen/${f.slug}`} aria-hidden="true" tabindex="-1">{monogram(f.firma)}</a>
+          <div class="result-body">
+            <div class="result-tags">
+              {f.premium && <span class="tag tag-premium">Premiumpartner</span>}
+              <span class="tag tag-ok">Geprüft</span>
+              {f.demo && <span class="tag tag-demo">Beispiel</span>}
+            </div>
+            <h3 class="result-name"><a href={`/firmen/${f.slug}`}>{f.firma}</a></h3>
+            <p class="result-where">{f.plz} {f.ort}{f.radius_km && <span> · Einsatz bis {f.radius_km >= 300 ? 'bundesweit' : `${f.radius_km} km`}</span>}{f.mitarbeitende && <span> · {f.mitarbeitende} Mitarbeitende</span>}</p>
+            <ul class="chips">
+              {c.shown.map((l) => <li class:list={{ 'is-on': l.slug === leistung }}>{l.name}</li>)}
+              {c.more > 0 && <li class="chip-more">+{c.more}</li>}
+            </ul>
+          </div>
+          <div class="result-actions">
+            <a class="btn btn-primary btn-s" href={`/anfrage?firmen=${f.slug}${leistung ? `&leistung=${leistung}` : ''}`}>Angebot anfragen</a>
+            {f.premium && <a class="btn btn-ghost btn-s" href={`/firmen/${f.slug}#rueckruf`}>Rückruf</a>}
+            <button type="button" class="merk" data-merk={f.slug} aria-pressed="false" title="Auf die Merkliste">
+              <svg viewBox="0 0 16 16" width="22" height="22" aria-hidden="true"><path d="M3.5 1.5h9v13L8 11l-4.5 3.5z" /></svg><span class="sr merk-label">Merken</span>
+            </button>
+          </div>
+        </li>
+      );
+    })}
+  </ul>
+)}

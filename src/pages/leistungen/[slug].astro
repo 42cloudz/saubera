@@ -48,9 +48,14 @@ const ld = {
   <section class="section section-soft">
     <div class="wrap editorial">
       <h2>{l.name} in Ihrer Stadt</h2>
-      <dl class="laender editorial-body">
-        {bundeslaender.map((b) => <><dt>{b}</dt><dd>{orteImLand(b).map((o, i) => <>{i > 0 && ', '}<a href={`/leistungen/${l.slug}/${o.slug}`}>{o.name}</a></>)}</dd></>)}
-      </dl>
+      <div class="places-grid editorial-body">
+        {bundeslaender.map((b) => (
+          <div>
+            <h3>{b}</h3>
+            <ul>{orteImLand(b).map((o) => <li><a href={`/leistungen/${l.slug}/${o.slug}`}>{o.name}</a></li>)}</ul>
+          </div>
+        ))}
+      </div>
     </div>
   </section>
   <section class="section">

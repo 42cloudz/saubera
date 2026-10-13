@@ -1,0 +1,27 @@
+---
+// The search bar of the directory: service, postcode or place, optional company name.
+import { leistungen } from '../data/leistungen.ts';
+import { orte } from '../data/orte.ts';
+
+interface Props { leistung?: string | null; wo?: string; name?: string }
+const { leistung, wo = '', name = '' } = Astro.props;
+---
+<form class="search" method="get" action="/firmen" role="search">
+  <div class="search-field">
+    <label for="s-leistung">Leistung</label>
+    <select id="s-leistung" name="leistung">
+      <option value="">Alle Leistungen</option>
+      {leistungen.map((l) => <option value={l.slug} selected={l.slug === leistung}>{l.name}</option>)}
+    </select>
+  </div>
+  <div class="search-field">
+    <label for="s-wo">PLZ oder Ort</label>
+    <input type="text" id="s-wo" name="wo" value={wo} list="s-orte" placeholder="z. B. 60311 oder Hanau" autocomplete="off" />
+    <datalist id="s-orte">{orte.map((o) => <option value={o.name} />)}</datalist>
+  </div>
+  <div class="search-field search-name">
+    <label for="s-name">Firmenname <span class="opt">(optional)</span></label>
+    <input type="text" id="s-name" name="name" value={name} />
+  </div>
+  <button class="btn btn-primary" type="submit">Firmen finden</button>
+</form>

@@ -1,71 +1,71 @@
 ---
-// The public directory of approved cleaning companies, filterable by service, place and name.
+// The public directory of approved cleaning companies, searchable by service, place and name.
 import Base from '../../layouts/Base.astro';
-import FirmenTable from '../../components/FirmenTable.astro';
+import FirmenListe from '../../components/FirmenListe.astro';
+import FirmenSuche from '../../components/FirmenSuche.astro';
 import { leistungen, leistungBySlug } from '../../data/leistungen.ts';
 import { bundeslaender, orteImLand, ortBySlug } from '../../data/orte.ts';
-import { findFirmen } from '../../lib/firmen.ts';
+import { findFirmen, resolveWo } from '../../lib/firmen.ts';
 
 export const prerender = false;
 
 const q = Astro.url.searchParams;
 const leistung = leistungBySlug.has(q.get('leistung') ?? '') ? q.get('leistung') : null;
-const ortParam = q.get('ort')?.trim() ?? '';
-const ort = ortBySlug.get(ortParam) ?? null;
-const plzRaw = (q.get('plz') ?? '').trim();
-const plz = /^\d{5}$/.test(plzRaw) ? plzRaw : ort?.plz ?? null;
+// ?ort=<slug> from links, ?wo= from the search field.
+const linked = ortBySlug.get(q.get('ort') ?? '');
+const woRaw = (q.get('wo') ?? linked?.name ?? '').trim().slice(0, 60);
+const { plz, ort } = resolveWo(woRaw);
 const name = (q.get('name') ?? '').trim().slice(0, 80);
+const unknownWo = woRaw !== '' && !plz;
 const firmen = findFirmen({ leistung, plz, name });
 const filtered = Boolean(leistung || plz || name);
-const where = ort ? `in ${ort.name}` : plz ? `für PLZ ${plz}` : '';
-const title = [leistung ? leistungBySlug.get(leistung)!.name : 'Reinigungsfirmen', where].filter(Boolean).join(' ');
+const woText = ort ? ort.name : plz ? `PLZ ${plz}` : null;
+const title = [leistung ? leistungBySlug.get(leistung)!.name : 'Reinigungsfirmen', woText && `in ${woText}`].filter(Boolean).join(' ');
+const link = (o: { leistung?: string | null; ort?: string | null }) => {
+  const p = new URLSearchParams();
+  if (o.leistung) p.set('leistung', o.leistung);
+  if (o.ort) p.set('ort', o.ort);
+  const s = p.toString();
+  return s ? `/firmen?${s}` : '/firmen';
+};
+const beliebt = ['berlin', 'hamburg', 'muenchen', 'koeln', 'frankfurt-am-main', 'stuttgart', 'duesseldorf', 'leipzig', 'hannover', 'nuernberg'];
 ---
-<Base title={filtered ? title : 'Firmenverzeichnis Gebäudereinigung'} description="Geprüfte Reinigungsfirmen für Unternehmen: nach Leistung, Ort und Postleitzahl suchen, merken und gemeinsam anfragen.">
-  <section class="page-head">
+<Base title={filtered ? title : 'Reinigungsfirmen finden'} description="Geprüfte Reinigungsfirmen für Unternehmen: nach Leistung, Ort und Postleitzahl suchen, merken und gemeinsam anfragen.">
+  <section class="dir-head">
     <div class="wrap">
-      <div class="crumbs"><a href="/">Start</a> / Firmenverzeichnis</div>
-      <h1>{filtered ? title : 'Firmenverzeichnis'}</h1>
-      <p class="lead">Geprüfte Reinigungsfirmen für gewerbliche Objekte. Merken Sie sich passende Firmen und fragen Sie alle mit einer Anfrage an.</p>
+      <h1>{filtered ? title : 'Reinigungsfirmen finden'}</h1>
+      <p class="lead">Geprüfte Betriebe für gewerbliche Objekte. Merken Sie sich passende Firmen und fragen Sie alle mit einer Anfrage an.</p>
+      <FirmenSuche leistung={leistung} wo={woRaw} name={name} />
+      <nav class="quick" aria-label="Nach Leistung filtern">
+        <a href={link({ ort: ort?.slug })} class:list={{ 'is-on': !leistung }}>Alle</a>
+        {leistungen.map((l) => <a href={link({ leistung: l.slug, ort: ort?.slug })} class:list={{ 'is-on': l.slug === leistung }}>{l.name}</a>)}
+      </nav>
     </div>
   </section>
-  <section class="section">
-    <div class="wrap dir">
-      <form class="dir-filter" method="get" action="/firmen">
-        <h2 class="sr">Filter</h2>
-        <label for="f-leistung">Leistung</label>
-        <select id="f-leistung" name="leistung">
-          <option value="">Alle Leistungen</option>
-          {leistungen.map((l) => <option value={l.slug} selected={l.slug === leistung}>{l.name}</option>)}
-        </select>
-        <label for="f-plz">PLZ</label>
-        <input type="text" id="f-plz" name="plz" inputmode="numeric" maxlength="5" pattern="\d{5}" value={/^\d{5}$/.test(plzRaw) ? plzRaw : ''} placeholder="z. B. 60311" />
-        <label for="f-ort">Ort</label>
-        <select id="f-ort" name="ort">
-          <option value="">Alle Orte</option>
-          {bundeslaender.map((b) => <optgroup label={b}>{orteImLand(b).map((o) => <option value={o.slug} selected={o.slug === ort?.slug}>{o.name}</option>)}</optgroup>)}
-        </select>
-        <label for="f-name">Firmenname</label>
-        <input type="text" id="f-name" name="name" value={name} />
-        <div class="btn-row"><button class="btn btn-primary" type="submit">Filtern</button>{filtered && <a class="btn btn-ghost" href="/firmen">Zurücksetzen</a>}</div>
-      </form>
-      <div class="dir-main">
-        <p class="dir-count"><strong>{firmen.length}</strong> {firmen.length === 1 ? 'Firma' : 'Firmen'}{filtered ? ' passen zu Ihrer Suche' : ' im Verzeichnis'}</p>
-        <FirmenTable firmen={firmen} leistung={leistung} />
+  <section class="dir-results">
+    <div class="wrap">
+      <div class="results-bar">
+        <p><strong>{firmen.length}</strong> {firmen.length === 1 ? 'Firma' : 'Firmen'}{unknownWo && <span class="hint"> · „{woRaw}“ kennen wir noch nicht, bitte die PLZ eingeben</span>}</p>
+        {filtered && <a href="/firmen">Filter zurücksetzen</a>}
       </div>
+      <FirmenListe firmen={firmen} leistung={leistung} wo={woText} />
     </div>
   </section>
   <section class="section section-soft">
-    <div class="wrap dir-links">
-      <div>
-        <h2>Nach Leistung</h2>
-        <ul class="link-list">{leistungen.map((l) => <li><a href={`/firmen?leistung=${l.slug}`}>{l.name}</a></li>)}</ul>
-      </div>
-      <div>
-        <h2>Nach Ort</h2>
-        <dl class="laender">
-          {bundeslaender.map((b) => <><dt>{b}</dt><dd>{orteImLand(b).map((o, i) => <>{i > 0 && ', '}<a href={`/firmen?ort=${o.slug}`}>{o.name}</a></>)}</dd></>)}
-        </dl>
-      </div>
+    <div class="wrap places">
+      <h2>Reinigungsfirmen nach Ort</h2>
+      <ul class="pill-list">{beliebt.map((s) => ortBySlug.get(s)!).map((o) => <li><a href={link({ leistung, ort: o.slug })}>{o.name}</a></li>)}</ul>
+      <details class="all-places">
+        <summary>Alle Orte nach Bundesland</summary>
+        <div class="places-grid">
+          {bundeslaender.map((b) => (
+            <div>
+              <h3>{b}</h3>
+              <ul>{orteImLand(b).map((o) => <li><a href={link({ leistung, ort: o.slug })}>{o.name}</a></li>)}</ul>
+            </div>
+          ))}
+        </div>
+      </details>
     </div>
   </section>
 </Base>

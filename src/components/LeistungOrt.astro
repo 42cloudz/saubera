@@ -4,7 +4,7 @@
 // and questions people ask. Tabs are anchors, so every part is in the page for search engines.
 import Base from '../layouts/Base.astro';
 import PriceCalc from './PriceCalc.astro';
-import FirmenTable from './FirmenTable.astro';
+import FirmenListe from './FirmenListe.astro';
 import Faq from './Faq.astro';
 import AdSlot from './AdSlot.astro';
 import type { Leistung } from '../data/leistungen.ts';
@@ -42,7 +42,7 @@ const ld = {
       <p class="lead">{l.kurz} Richtpreis: {einheitspreis(l)} und Einsatz. {firmen.length > 0 ? `${firmen.length} geprüfte ${firmen.length === 1 ? 'Firma' : 'Firmen'} für ${ort.name} im Verzeichnis.` : `Wir suchen passende Firmen für ${ort.name} für Sie heraus.`}</p>
     </div>
   </section>
-  <nav class="tabs" aria-label="Abschnitte">
+  <nav class="tabs" aria-label="Abschnitte auf dieser Seite">
     <div class="wrap"><a href="#angebote">Angebote einholen</a><a href="#firmen">Dienstleister</a><a href="#checkliste">Checkliste</a><a href="#fragen">Häufige Fragen</a></div>
   </nav>
   <section class="section" id="angebote">
@@ -57,8 +57,8 @@ const ld = {
         <h2>{l.name} in {ort.name}: Dienstleister</h2>
         <p>Firmen, die {l.name} anbieten und {ort.name} ({ort.plz}) in ihrem Einsatzgebiet haben. Merken Sie sich mehrere und fragen Sie alle auf einmal an.</p>
       </div>
-      <FirmenTable firmen={firmen} leistung={l.slug} />
-      <p class="mt-m"><a class="link-strong" href={`/firmen?leistung=${l.slug}&ort=${ort.slug}`}>Im Firmenverzeichnis weiter filtern</a></p>
+      <FirmenListe firmen={firmen} leistung={l.slug} wo={ort.name} />
+      <p class="mt-m"><a class="link-strong" href={`/firmen?leistung=${l.slug}&ort=${ort.slug}`}>Alle Firmen für {ort.name} im Verzeichnis</a></p>
     </div>
   </section>
   <section class="section" id="checkliste">
@@ -82,14 +82,14 @@ const ld = {
     </div>
   </section>
   <section class="section">
-    <div class="wrap dir-links">
+    <div class="wrap places places-2">
       <div>
         <h2>{l.name} in {ort.name} für</h2>
-        <ul class="link-list">{objekte.filter((o) => o.slug !== objekt?.slug).map((o) => <li><a href={`${base}/${o.slug}/${ort.slug}`}>{o.name}</a></li>)}</ul>
+        <ul class="pill-list">{objekte.filter((o) => o.slug !== objekt?.slug).map((o) => <li><a href={`${base}/${o.slug}/${ort.slug}`}>{o.name}</a></li>)}</ul>
       </div>
       <div>
         <h2>{l.name} in {ort.land}</h2>
-        {nachbarn.length > 0 ? <ul class="link-list">{nachbarn.map((o) => <li><a href={objekt ? `${base}/${objekt.slug}/${o.slug}` : `${base}/${o.slug}`}>{o.name}</a></li>)}</ul> : <p><a href={base}>Alle Orte für {l.name}</a></p>}
+        {nachbarn.length > 0 ? <ul class="pill-list">{nachbarn.map((o) => <li><a href={objekt ? `${base}/${objekt.slug}/${o.slug}` : `${base}/${o.slug}`}>{o.name}</a></li>)}</ul> : <p><a href={base}>Alle Orte für {l.name}</a></p>}
       </div>
     </div>
   </section>

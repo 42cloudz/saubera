@@ -5,7 +5,7 @@ Das B2B-Portal für Gebäude- und Objektreinigung: Unternehmen beschreiben ihr O
 - **Stack:** Astro 7 (vorgerenderte Seiten) + `@astrojs/node`, ein Node-24-Container, SQLite über `node:sqlite` in `/data`.
 - **Seiten:** `src/pages`, Leistungen in `src/data/leistungen.ts`, Betreiberangaben für Impressum und Datenschutz in `src/data/site.ts`.
 - **Formulare:** `POST /api/anfrage` und `POST /api/dienstleister` (`src/lib/forms.ts` prüft, `src/lib/db.ts` speichert, `src/lib/notify.ts` mailt).
-- **Verzeichnis:** `/firmen` (Filter Leistung, PLZ, Ort, Name), Profile `/firmen/<slug>`, Merkliste im Browser, Rückruf für Premiumpartner. Firmen erscheinen erst, wenn sie im Admin auf „freigeschaltet“ stehen.
+- **Verzeichnis:** `/firmen` (Suche nach Leistung, PLZ oder Ort, Name), Profile `/firmen/<slug>`, Merkliste im Browser, Rückruf für Premiumpartner. Firmen erscheinen erst, wenn sie im Admin auf „freigeschaltet“ stehen.
 - **Ortsseiten:** `/leistungen/<leistung>/<ort>` und `/leistungen/<leistung>/<objektart>/<ort>` (Orte in `src/data/orte.ts`, Objektarten in `src/data/objekte.ts`).
 - **Admin:** `/admin` mit HTTP Basic Auth (`ADMIN_PASSWORD`), Matching nach PLZ-Region und Leistung in `src/lib/matching.ts`.
 - **Deployment:** [docs/deployment.md](docs/deployment.md).

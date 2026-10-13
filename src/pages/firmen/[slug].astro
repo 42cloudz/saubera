@@ -7,6 +7,7 @@ import { leistungBySlug } from '../../data/leistungen.ts';
 import { orte } from '../../data/orte.ts';
 import { getFirma } from '../../lib/db.ts';
 import { reaches } from '../../lib/matching.ts';
+import { monogram } from '../../lib/firmen.ts';
 
 export const prerender = false;
 
@@ -33,65 +34,76 @@ const ld = {
 };
 ---
 <Base title={`${f.firma}, Reinigung in ${f.ort ?? f.plz}`} description={`${f.firma} aus ${f.plz} ${f.ort ?? ''}: ${services.map((l) => l.name).join(', ')}. Angebot über Saubera anfragen.`} jsonLd={f.demo ? undefined : ld}>
-  <section class={`page-head firma-head${f.premium ? ' is-premium' : ''}`}>
+  <section class="profile-head">
     <div class="wrap">
-      <div class="crumbs"><a href="/">Start</a> / <a href="/firmen">Firmenverzeichnis</a> / {f.firma}</div>
-      <h1>{f.firma}</h1>
-      <p class="firma-meta">{f.plz} {f.ort}{f.radius_km && <> · Einsatzradius {f.radius_km} km</>}{f.mitarbeitende && <> · {f.mitarbeitende} Mitarbeitende</>}
-        {f.premium && <span class="badge badge-premium">Premiumpartner</span>}{f.demo && <span class="badge badge-demo">Beispiel</span>}</p>
-      <div class="btn-row mt-m">
-        <a class="btn btn-primary" href={`/anfrage?firmen=${f.slug}`}>Angebot einholen</a>
-        {tel && <a class="btn btn-ghost" href={tel}>Anrufen: {f.telefon}</a>}
-        {f.premium && <a class="btn btn-ghost" href="#rueckruf">Rückruf anfordern</a>}
-        <button type="button" class="btn btn-ghost merk merk-wide" data-merk={f.slug} aria-pressed="false">
-          <svg viewBox="0 0 16 16" width="22" height="22" aria-hidden="true"><path d="M3.5 1.5h9v13L8 11l-4.5 3.5z" /></svg><span class="merk-label">Merken</span>
-        </button>
+      <div class="crumbs"><a href="/firmen">Reinigungsfirmen</a>{f.ort && <> / <a href={`/firmen?wo=${encodeURIComponent(f.ort)}`}>{f.ort}</a></>}</div>
+      <div class="profile-id">
+        <span class:list={['mono-xl', { 'is-premium': f.premium }]} aria-hidden="true">{monogram(f.firma)}</span>
+        <div>
+          <div class="result-tags">
+            {f.premium && <span class="tag tag-premium">Premiumpartner</span>}
+            <span class="tag tag-ok">Geprüft</span>
+            {f.demo && <span class="tag tag-demo">Beispiel</span>}
+          </div>
+          <h1>{f.firma}</h1>
+          <p class="result-where">{f.plz} {f.ort}{f.radius_km && <span> · Einsatz bis {f.radius_km >= 300 ? 'bundesweit' : `${f.radius_km} km`}</span>}{f.mitarbeitende && <span> · {f.mitarbeitende} Mitarbeitende</span>}</p>
+        </div>
       </div>
     </div>
   </section>
-  <section class="section">
-    <div class="wrap editorial">
-      <h2>Vorstellung</h2>
-      <div class="editorial-body">
+  <div class="wrap profile">
+    <div class="profile-main">
+      <section>
+        <h2>Über uns</h2>
         {(f.beschreibung ?? 'Diese Firma hat noch keine Vorstellung hinterlegt.').split(/\n{2,}/).map((p) => <p>{p}</p>)}
-        <dl class="facts">
-          <dt>Leistungen</dt><dd>{services.map((l, i) => <>{i > 0 && ', '}<a href={`/leistungen/${l.slug}`}>{l.name}</a></>)}</dd>
-          <dt>Einsatzgebiet</dt><dd>{f.radius_km ? `Rund ${f.radius_km} km um ${f.plz} ${f.ort ?? ''}` : `${f.plz} ${f.ort ?? ''} und Umgebung`}{nearby.length > 0 && <>, zum Beispiel {nearby.map((o, i) => <>{i > 0 && ', '}{o.name}</>)}</>}</dd>
-          {f.website && <><dt>Website</dt><dd><a href={f.website} rel="nofollow noopener" target="_blank">{f.website.replace(/^https?:\/\//, '')}</a></dd></>}
-        </dl>
-      </div>
-    </div>
-  </section>
-  {rechtlich.length > 0 && (
-    <section class="section section-soft">
-      <div class="wrap editorial">
-        <h2>Rechtliche Angaben</h2>
-        <div class="editorial-body">
-          <dl class="facts">{rechtlich.map(([k, v]) => <><dt>{k}</dt><dd>{v}</dd></>)}</dl>
+      </section>
+      <section>
+        <h2>Leistungen</h2>
+        <ul class="service-tiles">{services.map((l) => <li><a href={`/leistungen/${l.slug}`}><strong>{l.name}</strong><span>{l.kurz}</span></a></li>)}</ul>
+      </section>
+      <section>
+        <h2>Einsatzgebiet</h2>
+        <p>{f.radius_km && f.radius_km >= 300 ? 'Bundesweit' : f.radius_km ? `Rund ${f.radius_km} km um ${f.plz} ${f.ort ?? ''}` : `${f.plz} ${f.ort ?? ''} und Umgebung`}.</p>
+        {nearby.length > 0 && <ul class="pill-list">{nearby.map((o) => <li><span>{o.name}</span></li>)}</ul>}
+      </section>
+      {rechtlich.length > 0 && (
+        <section>
+          <h2>Rechtliche Angaben</h2>
+          <dl class="kv">{rechtlich.map(([k, v]) => <><dt>{k}</dt><dd>{v}</dd></>)}</dl>
           <p class="form-note">Angaben der Firma. Saubera prüft Gewerbeanmeldung und Versicherung, bevor ein Profil erscheint.</p>
+        </section>
+      )}
+    </div>
+    <aside class="profile-side">
+      <div class="contact-card">
+        <p class="contact-title">Angebot von {f.firma.replace(/\s*\(Beispiel\)/, '')}</p>
+        <p class="contact-text">Beschreiben Sie Ihr Objekt einmal, die Firma kalkuliert auf Ihr Leistungsverzeichnis. Kostenlos und unverbindlich.</p>
+        <a class="btn btn-primary btn-block" href={`/anfrage?firmen=${f.slug}`}>Angebot einholen</a>
+        <div class="contact-row">
+          {tel && <a class="btn btn-ghost btn-s" href={tel}>Anrufen</a>}
+          <button type="button" class="btn btn-ghost btn-s merk merk-wide" data-merk={f.slug} aria-pressed="false">
+            <svg viewBox="0 0 16 16" width="22" height="22" aria-hidden="true"><path d="M3.5 1.5h9v13L8 11l-4.5 3.5z" /></svg><span class="merk-label">Merken</span>
+          </button>
         </div>
+        {f.website && <p class="contact-web"><a href={f.website} rel="nofollow noopener" target="_blank">{f.website.replace(/^https?:\/\//, '')}</a></p>}
       </div>
-    </section>
-  )}
-  {f.premium && (
-    <section class="section" id="rueckruf">
-      <div class="wrap editorial">
-        <h2>Rückruf anfordern</h2>
-        <div class="editorial-body">
-          <p>Hinterlassen Sie Ihre Nummer. {f.firma} ruft Sie in der Regel am selben oder nächsten Werktag zurück.</p>
-          <form class="form-card" method="post" action="/api/rueckruf" data-enhance>
-            <div class="form-errors" role="alert"></div>
-            <input type="hidden" name="dienstleister_id" value={f.id} />
-            <div class="form-grid">
-              <div><label for="r-name">Ihr Name</label><input type="text" id="r-name" name="name" required autocomplete="name" /></div>
-              <div><label for="r-firma">Firma</label><input type="text" id="r-firma" name="firma" autocomplete="organization" /></div>
-              <div><label for="r-tel">Telefon</label><input id="r-tel" name="telefon" type="tel" required autocomplete="tel" /></div>
-              <div><label for="r-anliegen">Worum geht es? <span class="opt">(optional)</span></label><input type="text" id="r-anliegen" name="anliegen" placeholder="z. B. Büroreinigung, 300 m²" /></div>
-            </div>
-            <FormFooter submit="Rückruf anfordern" />
-          </form>
-        </div>
-      </div>
-    </section>
-  )}
+      {f.premium && (
+        <form class="contact-card callback" id="rueckruf" method="post" action="/api/rueckruf" data-enhance>
+          <p class="contact-title">Rückruf anfordern</p>
+          <p class="contact-text">Meist am selben oder nächsten Werktag.</p>
+          <div class="form-errors" role="alert"></div>
+          <input type="hidden" name="dienstleister_id" value={f.id} />
+          <label for="r-name">Ihr Name</label><input type="text" id="r-name" name="name" required autocomplete="name" />
+          <label for="r-firma">Firma</label><input type="text" id="r-firma" name="firma" autocomplete="organization" />
+          <label for="r-tel">Telefon</label><input id="r-tel" name="telefon" type="tel" required autocomplete="tel" />
+          <label for="r-anliegen">Worum geht es? <span class="opt">(optional)</span></label><input type="text" id="r-anliegen" name="anliegen" placeholder="z. B. Büroreinigung, 300 m²" />
+          <FormFooter submit="Rückruf anfordern" />
+        </form>
+      )}
+    </aside>
+  </div>
+  <div class="mobile-cta">
+    <a class="btn btn-primary" href={`/anfrage?firmen=${f.slug}`}>Angebot einholen</a>
+    {tel ? <a class="btn btn-ghost" href={tel}>Anrufen</a> : f.premium && <a class="btn btn-ghost" href="#rueckruf">Rückruf</a>}
+  </div>
 </Base>
