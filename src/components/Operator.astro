@@ -4,7 +4,10 @@ import { site } from '../data/site.ts';
 const o = site.operator;
 ---
 {o ? (
-  <p>{o.name}<br />{o.street}<br />{o.city}<br />E-Mail: {o.email}{o.phone && <><br />Telefon: {o.phone}</>}</p>
+  <>
+    <img class="operator-img" src={o.image} width="337" height="173" alt="Anschrift, Registereintrag, USt-IdNr. und inhaltlich Verantwortlicher des Betreibers" />
+    <p>E-Mail: <a href={`mailto:${o.email}`}>{o.email}</a><br />Hotline: <a href={`tel:${o.phone.replace(/\s/g, '')}`}>{o.phone}</a></p>
+  </>
 ) : (
   <p><span class="todo">Betreiberangaben folgen: Firmenname, Anschrift, E-Mail, Telefon</span></p>
 )}

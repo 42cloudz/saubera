@@ -549,3 +549,5 @@ section[id] { scroll-margin-top: 64px; }
   .mobile-cta { display: flex; gap: 8px; position: sticky; bottom: 0; z-index: 6; background: #fff; border-top: 1px solid var(--line); padding: 10px 20px calc(10px + env(safe-area-inset-bottom)); }
   .mobile-cta .btn-primary { flex: 1; box-shadow: none; }
 }
+
+.operator-img { display: block; max-width: 100%; height: auto; margin: 0 0 12px; }
