@@ -835,3 +835,13 @@ fieldset { border-top: 1px solid var(--line); }
 .hero-photo img { width: 100%; height: auto; aspect-ratio: 4 / 3; object-fit: cover; object-position: 50% 70%; border-radius: 20px; box-shadow: var(--shadow-h); }
 .hero .lead { margin-bottom: 22px; }
 @media (max-width: 960px) { .hero-split { grid-template-columns: minmax(0, 1fr); } .hero-photo { order: -1; } .hero-photo img { aspect-ratio: 16 / 9; } }
+
+/* Branchen auf der Startseite */
+.branchen { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
+.branchen a { display: grid; gap: 4px; align-content: start; height: 100%; padding: 16px 18px; background: #fff; border: 1px solid var(--line); border-radius: var(--r); color: var(--ink); text-decoration: none; transition: box-shadow .15s, border-color .15s; }
+.branchen a:hover { border-color: #bfe5d3; box-shadow: var(--shadow-h); color: var(--ink); }
+.branchen strong { font-weight: 700; }
+.branchen span { font-size: .86rem; color: var(--muted); }
+.hero-points a { color: var(--accent-dark); font-weight: 600; text-decoration: none; }
+@media (max-width: 1000px) { .branchen { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 520px) { .branchen { grid-template-columns: minmax(0, 1fr); } }

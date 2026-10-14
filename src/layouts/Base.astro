@@ -48,6 +48,8 @@ const orgLd = {
     <meta property="og:description" content={description} />
     <meta property="og:url" content={canonical} />
     <meta property="og:locale" content="de_DE" />
+    <meta property="og:image" content={new URL('/img/fassade-1680.jpg', Astro.site)} />
+    <meta name="twitter:card" content="summary_large_image" />
     <script type="application/ld+json" set:html={JSON.stringify(jsonLd ?? orgLd)} />
   </head>
   <body>
@@ -73,6 +75,7 @@ const orgLd = {
           <div>
             <a class="logo" href="/"><Logo />saubera</a>
             <p>{site.claim}. Nur für Unternehmen, Verwaltungen und Gewerbe.</p>
+            <p><a href={`tel:${site.operator.phone.replace(/\s/g, '')}`}>{site.operator.phone}</a><br />{site.hotline}</p>
           </div>
           <div>
             <h4>Leistungen</h4>

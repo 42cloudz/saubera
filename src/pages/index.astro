@@ -2,6 +2,8 @@
 import Base from '../layouts/Base.astro';
 import PriceCalc from '../components/PriceCalc.astro';
 import PriceTable from '../components/PriceTable.astro';
+import { branchen } from '../data/branchen.ts';
+import { site } from '../data/site.ts';
 ---
 <Base title="Saubera">
   <section class="hero">
@@ -14,6 +16,7 @@ import PriceTable from '../components/PriceTable.astro';
             <li>Nur für Unternehmen, Praxen, Handel, Industrie und Hausverwaltungen</li>
             <li>Für Auftraggeber kostenlos</li>
             <li>Reinigungsfirmen zahlen keine Lead-Gebühr</li>
+            <li>{site.hotline}: <a href={`tel:${site.operator.phone.replace(/\s/g, '')}`}>{site.operator.phone}</a></li>
           </ul>
         </div>
         <picture class="hero-photo">
@@ -36,6 +39,20 @@ import PriceTable from '../components/PriceTable.astro';
   </section>
 
   <section class="section section-soft">
+    <div class="wrap">
+      <div class="table-head">
+        <h2>Reinigung für alle Branchen</h2>
+        <p>Typische Aufgaben je Branche. Ihr Leistungsverzeichnis passen wir an Ihr Objekt an.</p>
+      </div>
+      <ul class="branchen">
+        {branchen.map((b) => (
+          <li><a href={`/leistungen/${b.leistung}`}><strong>{b.name}</strong><span>{b.punkte.join(' · ')}</span></a></li>
+        ))}
+      </ul>
+    </div>
+  </section>
+
+  <section class="section">
     <div class="wrap editorial">
       <h2>Nach der Vermittlung bleiben wir dabei.</h2>
       <div class="editorial-body">
@@ -50,6 +67,10 @@ import PriceTable from '../components/PriceTable.astro';
           <dd>Ihr Team meldet per Handy, was liegen geblieben ist. Die Firma bekommt es sofort.</dd>
           <dt>Vertretung</dt>
           <dd>Fällt das Reinigungsteam aus, organisieren wir Ersatz aus dem Partnernetz.</dd>
+          <dt>Ad-hoc-Reinigung</dt>
+          <dd>Für Unvorhergesehenes: Angebot, Auftrag und Reinigung am selben Tag.</dd>
+          <dt>Hotline</dt>
+          <dd>Sieben Tage die Woche erreichbar unter {site.operator.phone}.</dd>
         </dl>
         <p><a class="link-strong" href="/unternehmen">Mehr zum Ablauf für Auftraggeber</a></p>
       </div>
