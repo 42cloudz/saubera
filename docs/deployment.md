@@ -22,7 +22,7 @@ Ein Container (Node 24): Astro rendert die Seiten beim Build vor, `server.mjs` l
 | GitHub-Repo `42cloudz/saubera`, privat | offen |
 | GitLab-Projekt `42cloudz/saubera`, privat, Runner `hetzner` zugewiesen | offen |
 | GitHub-Secret `GITLAB_MIRROR_TOKEN` (GitLab Project Access Token, Maintainer, `write_repository`) | offen |
-| GitHub-Runner `mmd-mirror` auch für dieses Repo (Org-Runner oder zweiter Runner) | offen |
+| GitHub-Runner `mmd-mirror` für dieses Repo: `sudo sh infra/setup-github-runner.sh` auf dem Server, fragt nur nach dem Registrierungs-Token | offen |
 | GitLab-Variable `DEPLOY_TOKEN` (Project Access Token `ci-deploy`, Maintainer, `write_repository`, masked, protected) | offen |
 | Pull-Secret und Argo-CD-Repo (Deploy-Token mit `read_repository`, `read_registry`) | offen, siehe 1 |
 | Secret `saubera-secrets` (Admin-Passwort, Mail) | offen, siehe 2 |
