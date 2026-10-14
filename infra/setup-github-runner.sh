@@ -77,12 +77,17 @@ tar xzf "$FILE"
 rm -f "$FILE"
 chown -R "$RUNNER_USER:$RUNNER_USER" "$DIR"
 
-# Libraries the runner needs (only installs what is missing).
-./bin/installdependencies.sh
+# Libraries the runner needs (only installs what is missing). On Rocky/RHEL 10 the package
+# lttng-ust does not exist; it is only for tracing, and the runner works without it.
+./bin/installdependencies.sh || echo "Hinweis: nicht alle optionalen Pakete gefunden (z. B. lttng-ust), weiter."
 
 su "$RUNNER_USER" -c "cd '$DIR' && ./config.sh --unattended --url 'https://github.com/$REPO' --token '$TOKEN' --name '$NAME' --labels '$LABEL' --work _work --replace"
 
 ./svc.sh install "$RUNNER_USER"
+# SELinux (Rocky/RHEL) refuses to start a service script from a home directory otherwise.
+if command -v selinuxenabled >/dev/null && selinuxenabled; then
+  chcon -t bin_t "$DIR/runsvc.sh" || true
+fi
 ./svc.sh start
 
 echo
