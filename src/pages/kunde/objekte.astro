@@ -1,0 +1,47 @@
+---
+import Kunde from '../../layouts/Kunde.astro';
+import { requireKunde } from '../../lib/kunde.ts';
+import { eur, monatlich, objekt, objekt2 } from '../../data/kunde-demo.ts';
+
+export const prerender = false;
+const denied = requireKunde(Astro);
+if (denied) return denied;
+---
+<Kunde title="Objekte">
+  <h1 class="portal-h1">Objekte und Leistungsverzeichnis</h1>
+  <p class="portal-lead">Das Leistungsverzeichnis gehört Ihnen. Jede Ausschreibung und jeder Leistungsnachweis baut darauf auf.</p>
+
+  <section class="panel">
+    <div class="panel-top">
+      <div>
+        <h2 class="panel-h">{objekt.name}</h2>
+        <p class="muted">{objekt.adresse} · {objekt.art} · {objekt.flaeche.toLocaleString('de-DE')} m²</p>
+      </div>
+      <a class="btn btn-ghost btn-s" href="/kunde/vertrag#wechsel">Neu ausschreiben</a>
+    </div>
+    <dl class="kv">
+      <dt>Reinigungszeiten</dt><dd>{objekt.zeiten}</dd>
+      <dt>Zugang</dt><dd>{objekt.zugang}</dd>
+    </dl>
+    <div class="table-scroll">
+      <table class="lv-table">
+        <thead><tr><th>Pos.</th><th>Bereich</th><th>Leistung</th><th>Menge</th><th>Turnus</th><th class="r">Monatlich</th></tr></thead>
+        <tbody>
+          {objekt.positionen.map((p) => <tr><td class="num">{p.nr}</td><td><strong>{p.bereich}</strong></td><td>{p.leistung}</td><td>{p.menge}</td><td>{p.turnus}</td><td class="r">{eur(p.preis)}</td></tr>)}
+        </tbody>
+        <tfoot><tr><td colspan="5">Summe netto pro Monat</td><td class="r">{eur(monatlich())}</td></tr></tfoot>
+      </table>
+    </div>
+  </section>
+
+  <section class="panel">
+    <div class="panel-top">
+      <div>
+        <h2 class="panel-h">{objekt2.name}</h2>
+        <p class="muted">{objekt2.adresse} · {objekt2.art} · {objekt2.flaeche.toLocaleString('de-DE')} m²</p>
+      </div>
+      <a class="btn btn-ghost btn-s" href="/kunde/ausschreibungen">Zur Ausschreibung</a>
+    </div>
+    <p>Noch kein Vertrag. Die Ausschreibung läuft, es liegen Angebote vor.</p>
+  </section>
+</Kunde>

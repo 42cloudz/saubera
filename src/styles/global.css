@@ -85,12 +85,12 @@ p { margin: 0 0 1em; }
 .logo:hover { color: var(--ink); }
 .logo svg { width: 34px; height: 34px; }
 .nav { display: flex; gap: 2px; margin-left: auto; align-items: center; }
-.nav a { color: var(--ink); text-decoration: none; font-family: var(--display); font-weight: 600; font-size: 1.1rem; letter-spacing: 0.04em; text-transform: uppercase; padding: 8px 12px; border-bottom: 3px solid transparent; }
+.nav a { color: var(--ink); text-decoration: none; font-family: var(--display); font-weight: 600; font-size: 1.1rem; letter-spacing: 0.04em; text-transform: uppercase; padding: 8px 10px; white-space: nowrap; border-bottom: 3px solid transparent; }
 .nav a:hover, .nav a[aria-current='page'] { border-bottom-color: var(--signal); }
-.nav .btn { margin-left: 12px; min-height: 44px; padding: 8px 18px; border-bottom: 2px solid var(--ink); box-shadow: 3px 3px 0 var(--ink); }
+.nav .btn { white-space: nowrap; margin-left: 12px; min-height: 44px; padding: 8px 18px; border-bottom: 2px solid var(--ink); box-shadow: 3px 3px 0 var(--ink); }
 .menu-toggle { display: none; margin-left: auto; background: none; border: 0; padding: 8px; cursor: pointer; color: var(--ink); }
 .menu-toggle svg { width: 30px; height: 30px; }
-@media (max-width: 960px) {
+@media (max-width: 1180px) {
   .menu-toggle { display: block; }
   .nav { display: none; position: absolute; top: 70px; left: 0; right: 0; flex-direction: column; align-items: stretch; gap: 0; padding: 8px 20px 22px; background: var(--paper); border-bottom: 2px solid var(--ink); }
   .nav.open { display: flex; }
@@ -555,3 +555,80 @@ section[id] { scroll-margin-top: 64px; }
 /* Foto von saubera.de: breites Band unter dem Hero, Ausschnitt auf die Kletterer. */
 .photo-band { margin: 0; background: var(--ink); }
 .photo-band img { display: block; width: 100%; height: clamp(240px, 34vw, 460px); object-fit: cover; object-position: 50% 68%; }
+
+/* Kundenbereich (Demo): Seitennavigation links, Panels rechts. */
+input[type='password'] { width: 100%; font: inherit; font-size: 1rem; color: var(--ink); background: var(--mist); border: 0; border-bottom: 2px solid var(--ink); border-radius: 0; padding: 12px 14px; min-height: 50px; }
+.login-wrap { max-width: 520px; }
+.login-wrap .form-card { display: grid; gap: 6px; }
+.login-wrap .form-card input { margin-bottom: 14px; }
+.demo-bar { background: var(--signal); color: var(--ink); font: 500 .8rem/1.4 var(--mono); text-align: center; padding: 8px 20px; }
+.portal { display: grid; grid-template-columns: 260px minmax(0, 1fr); gap: 40px; padding-top: 36px; padding-bottom: 72px; align-items: start; }
+.portal-side { position: sticky; top: 90px; border: 2px solid var(--ink); background: var(--paper); }
+.portal-who { margin: 0; padding: 14px 16px; background: var(--ink); color: #fff; display: grid; font-size: .9rem; line-height: 1.35; }
+.portal-who span { color: var(--on-navy-2); font-size: .82rem; }
+.portal-side nav { display: grid; }
+.portal-side nav a { padding: 11px 16px; border-bottom: 1px solid var(--line); color: var(--ink); text-decoration: none; font-size: .95rem; }
+.portal-side nav a:hover { background: var(--mist); }
+.portal-side nav a[aria-current='page'] { background: var(--signal-soft); font-weight: 600; box-shadow: inset 4px 0 0 var(--ink); }
+.portal-logout { width: 100%; background: none; border: 0; padding: 12px 16px; text-align: left; font: inherit; font-size: .9rem; color: var(--muted); cursor: pointer; }
+.portal-logout:hover { color: var(--ink); text-decoration: underline; }
+.portal-h1 { font-size: clamp(2.2rem, 4.4vw, 3.4rem); margin-bottom: 10px; }
+.portal-lead { color: var(--ink-2); max-width: 70ch; margin-bottom: 26px; }
+.muted { color: var(--muted); }
+.warn { color: var(--warn); }
+.panel { border: 2px solid var(--ink); background: var(--paper); padding: clamp(18px, 2.4vw, 28px); margin-bottom: 24px; }
+.panel-h { font-size: 1.5rem; font-weight: 700; margin-bottom: 4px; }
+.panel-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; flex-wrap: wrap; margin-bottom: 16px; }
+.panel-top .muted { margin: 0; font-size: .92rem; }
+.kpis { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; margin-bottom: 24px; }
+.kpi { display: grid; gap: 4px; align-content: start; padding: 16px 18px; border: 2px solid var(--ink); background: var(--paper); color: var(--ink); text-decoration: none; }
+.kpi:hover { background: var(--signal-soft); color: var(--ink); }
+.kpi strong { font: 800 2.2rem/1 var(--display); }
+.kpi span:last-child { font-size: .86rem; color: var(--ink-2); }
+.kpi-label { font: 500 .72rem/1.2 var(--mono); text-transform: uppercase; letter-spacing: .06em; color: var(--muted); }
+.kpi-warn { box-shadow: inset 0 6px 0 var(--signal); }
+.portal-cols { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; align-items: start; }
+.portal-cols .panel { margin-bottom: 0; }
+.feed-list { list-style: none; margin: 8px 0 16px; padding: 0; display: grid; gap: 8px; font-size: .94rem; }
+.feed-list .num, .proof-list .num { font-family: var(--mono); font-size: .82rem; margin-right: 6px; }
+.lv-table { width: 100%; border-collapse: collapse; font-size: .92rem; }
+.lv-table th { text-align: left; font: 500 .72rem/1.2 var(--mono); text-transform: uppercase; letter-spacing: .05em; color: var(--muted); padding: 8px 10px; border-bottom: 2px solid var(--ink); vertical-align: bottom; }
+.lv-table td { padding: 10px; border-bottom: 1px solid var(--line); vertical-align: top; }
+.lv-table .num { font-family: var(--mono); font-size: .82rem; color: var(--muted); }
+.lv-table .r { text-align: right; white-space: nowrap; }
+.lv-table tfoot td { font-weight: 700; border-bottom: 0; border-top: 2px solid var(--ink); }
+.lv-table th a { color: var(--ink); white-space: normal; }
+.offer-compare th.r { min-width: 150px; }
+.offer-compare td:nth-child(2) { min-width: 200px; }
+.offer-compare td.best { background: #e3f3e8; color: #1d6b3f; font-weight: 700; }
+.offer-compare tfoot .compare-note td { font-weight: 400; font-size: .85rem; color: var(--ink-2); border-top: 1px solid var(--line); white-space: normal; text-align: left; }
+.offer-compare tfoot tr + tr td { border-top: 1px solid var(--line); }
+.notice { background: var(--signal-soft); border-left: 6px solid var(--ink); padding: 12px 16px; margin: 0 0 16px; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; }
+.notice p { margin: 0; }
+.tag-warn { background: #fde9e7; border-color: #f0b8b2; color: var(--warn); }
+.proof-list { list-style: none; margin: 8px 0 0; padding: 0; }
+.proof-list > li { border-bottom: 1px solid var(--line); }
+.proof-list summary { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 16px; padding: 12px 0; cursor: pointer; }
+.proof-list summary .tag { margin-left: auto; }
+.check-list { list-style: none; margin: 0 0 14px; padding: 0 0 0 4px; display: grid; gap: 4px; font-size: .92rem; }
+.check-list li::before { display: inline-block; width: 1.4em; font-weight: 700; }
+.check-list .ok::before { content: '✓'; color: #1d6b3f; }
+.check-list .miss { color: var(--warn); }
+.check-list .miss::before { content: '✗'; }
+.stack { display: grid; gap: 16px; }
+.ticket-list { list-style: none; margin: 8px 0 0; padding: 0; display: grid; gap: 12px; }
+.ticket-list li { border: 1px solid var(--line); padding: 12px 14px; }
+.ticket-list li.done { background: var(--mist); }
+.ticket-list p { margin: 6px 0; font-size: .94rem; }
+.ticket-top, .ticket-foot { display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; }
+.ticket-foot { font-size: .84rem; }
+.link-btn { background: none; border: 0; padding: 0; font: inherit; color: var(--cobalt); text-decoration: underline; cursor: pointer; }
+@media (max-width: 960px) {
+  .portal { grid-template-columns: minmax(0, 1fr); gap: 20px; padding-top: 20px; }
+  .portal-side { position: static; }
+  .portal-side nav { grid-template-columns: 1fr 1fr; }
+  .portal-side nav a { font-size: .88rem; padding: 10px 12px; }
+  .portal-side nav a:nth-child(odd) { border-right: 1px solid var(--line); }
+  .kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .portal-cols { grid-template-columns: minmax(0, 1fr); }
+}

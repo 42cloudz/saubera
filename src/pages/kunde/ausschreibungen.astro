@@ -1,0 +1,94 @@
+---
+import Kunde from '../../layouts/Kunde.astro';
+import { requireKunde } from '../../lib/kunde.ts';
+import { slugify } from '../../data/orte.ts';
+import { ausschreibungen, eur, summe } from '../../data/kunde-demo.ts';
+
+export const prerender = false;
+const denied = requireKunde(Astro);
+if (denied) return denied;
+
+if (Astro.request.method === 'POST') {
+  const f = await Astro.request.formData();
+  const a = ausschreibungen.find((x) => x.id === f.get('id'));
+  const firma = String(f.get('firma') ?? '');
+  if (a && f.get('aktion') === 'annehmen' && a.angebote.some((o) => o.firma === firma)) {
+    a.angenommen = firma;
+    a.status = 'Vergeben';
+  }
+  if (a && f.get('aktion') === 'zuruecksetzen') {
+    a.angenommen = null;
+    a.status = a.angebote.length ? 'Angebote liegen vor' : 'Veröffentlicht';
+  }
+  return Astro.redirect(`/kunde/ausschreibungen#${a?.id ?? ''}`, 303);
+}
+---
+<Kunde title="Ausschreibungen">
+  <h1 class="portal-h1">Ausschreibungen</h1>
+  <p class="portal-lead">Alle Firmen kalkulieren auf dasselbe Leistungsverzeichnis. So vergleichen Sie Position für Position.</p>
+
+  {ausschreibungen.map((a) => {
+    const min = a.positionen.map((_, i) => Math.min(...a.angebote.map((o) => o.preise[i])));
+    const best = a.angebote.length ? Math.min(...a.angebote.map(summe)) : 0;
+    return (
+      <section class="panel" id={a.id}>
+        <div class="panel-top">
+          <div>
+            <h2 class="panel-h">{a.titel}</h2>
+            <p class="muted"><span class="num">{a.id}</span> · {a.objekt} · Angebote bis {a.frist}</p>
+          </div>
+          <span class={`tag ${a.angenommen ? 'tag-ok' : 'tag-premium'}`}>{a.status}</span>
+        </div>
+        {a.angenommen && (
+          <form class="notice" method="post">
+            <p>Vergeben an <strong>{a.angenommen}</strong>. In der echten Plattform bekommt die Firma jetzt den Auftrag, die anderen eine Absage.</p>
+            <input type="hidden" name="id" value={a.id} /><input type="hidden" name="aktion" value="zuruecksetzen" />
+            <button class="btn btn-ghost btn-s" type="submit">Demo zurücksetzen</button>
+          </form>
+        )}
+        {a.angebote.length === 0 ? (
+          <>
+            <p>Die Ausschreibung ist an passende Firmen im Umkreis gegangen. Angebote erscheinen hier, sobald sie eingehen.</p>
+            <div class="table-scroll">
+              <table class="lv-table">
+                <thead><tr><th>Pos.</th><th>Bereich</th><th>Menge</th><th>Turnus</th></tr></thead>
+                <tbody>{a.positionen.map((p) => <tr><td class="num">{p.nr}</td><td>{p.bereich}</td><td>{p.menge}</td><td>{p.turnus}</td></tr>)}</tbody>
+              </table>
+            </div>
+          </>
+        ) : (
+          <div class="table-scroll">
+            <table class="lv-table offer-compare">
+              <thead>
+                <tr><th>Pos.</th><th>Bereich</th>{a.angebote.map((o) => <th class="r"><a href={`/firmen/${slugify(o.firma)}`}>{o.firma}</a></th>)}</tr>
+              </thead>
+              <tbody>
+                {a.positionen.map((p, i) => (
+                  <tr>
+                    <td class="num">{p.nr}</td>
+                    <td><strong>{p.bereich}</strong><br /><span class="muted">{p.menge}, {p.turnus}</span></td>
+                    {a.angebote.map((o) => <td class={`r${o.preise[i] === min[i] ? ' best' : ''}`}>{eur(o.preise[i])}</td>)}
+                  </tr>
+                ))}
+              </tbody>
+              <tfoot>
+                <tr><td colspan="2">Summe netto pro Monat</td>{a.angebote.map((o) => <td class={`r${summe(o) === best ? ' best' : ''}`}>{eur(summe(o))}</td>)}</tr>
+                <tr class="compare-note"><td colspan="2">Hinweis der Firma</td>{a.angebote.map((o) => <td>{o.hinweis}</td>)}</tr>
+                {!a.angenommen && (
+                  <tr><td colspan="2"></td>{a.angebote.map((o) => (
+                    <td>
+                      <form method="post">
+                        <input type="hidden" name="id" value={a.id} /><input type="hidden" name="aktion" value="annehmen" /><input type="hidden" name="firma" value={o.firma} />
+                        <button class="btn btn-primary btn-s" type="submit">Annehmen</button>
+                      </form>
+                    </td>
+                  ))}</tr>
+                )}
+              </tfoot>
+            </table>
+          </div>
+        )}
+      </section>
+    );
+  })}
+</Kunde>

@@ -79,7 +79,7 @@ Dieselbe IP wie mondaymustdie und gewerbejobs24 (Stand 2026-10). Sobald DNS zeig
 
 ## Später: eigene Domain
 
-Für die echte Domain ein Overlay `infra/k8s/overlays/prod` aus `test` kopieren, Host und Zertifikat ändern, `NOINDEX`, `SEED_DEMO` und den `SITE_URL`-Patch anpassen (auf der echten Seite kein `SEED_DEMO`), eine zweite Application anlegen und in `.gitlab-ci.yml` den sed-Schritt auch auf das neue Overlay anwenden. `SITE_URL` steuert Canonical-Links und Sitemap; die Sitemap-URL in `public/robots.txt` mit anpassen.
+Für die echte Domain ein Overlay `infra/k8s/overlays/prod` aus `test` kopieren, Host und Zertifikat ändern, `NOINDEX`, `SEED_DEMO` und den `SITE_URL`-Patch anpassen (auf der echten Seite kein `SEED_DEMO` und kein `DEMO_LOGIN`), eine zweite Application anlegen und in `.gitlab-ci.yml` den sed-Schritt auch auf das neue Overlay anwenden. `SITE_URL` steuert Canonical-Links und Sitemap; die Sitemap-URL in `public/robots.txt` mit anpassen.
 
 ## Lokal
 

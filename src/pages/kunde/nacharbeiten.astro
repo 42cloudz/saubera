@@ -1,0 +1,66 @@
+---
+import Kunde from '../../layouts/Kunde.astro';
+import { requireKunde } from '../../lib/kunde.ts';
+import { kunde, nacharbeiten, raeume, vertrag } from '../../data/kunde-demo.ts';
+
+export const prerender = false;
+const denied = requireKunde(Astro);
+if (denied) return denied;
+
+let fehler = '';
+if (Astro.request.method === 'POST') {
+  const f = await Astro.request.formData();
+  if (f.get('aktion') === 'melden') {
+    const raum = String(f.get('raum') ?? '');
+    const text = String(f.get('text') ?? '').trim().slice(0, 500);
+    if (raeume.includes(raum) && text) {
+      const id = Math.max(0, ...nacharbeiten.map((n) => n.id)) + 1;
+      nacharbeiten.unshift({ id, datum: new Date().toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit', year: 'numeric' }), raum, text, von: kunde.name, status: 'offen' });
+      if (nacharbeiten.length > 50) nacharbeiten.length = 50;
+      return Astro.redirect('/kunde/nacharbeiten?gemeldet=1', 303);
+    }
+    fehler = 'Bitte wählen Sie einen Raum und beschreiben Sie, was fehlt.';
+  } else {
+    const n = nacharbeiten.find((x) => x.id === Number(f.get('id')));
+    if (n) n.status = n.status === 'erledigt' ? 'offen' : 'erledigt';
+    return Astro.redirect('/kunde/nacharbeiten', 303);
+  }
+}
+const gemeldet = Astro.url.searchParams.has('gemeldet');
+---
+<Kunde title="Nacharbeiten">
+  <h1 class="portal-h1">Nacharbeiten</h1>
+  <p class="portal-lead">Ihr Team meldet hier, was liegen geblieben ist. {vertrag.firma} bekommt die Meldung sofort.</p>
+
+  <div class="portal-cols">
+    <section class="panel">
+      <h2 class="panel-h">Neue Meldung</h2>
+      {gemeldet && <p class="notice" role="status">Gemeldet. Die Reinigungsfirma ist benachrichtigt.</p>}
+      {fehler && <div class="form-errors show" role="alert">{fehler}</div>}
+      <form method="post" class="stack">
+        <input type="hidden" name="aktion" value="melden" />
+        <div><label for="raum">Raum</label>
+          <select id="raum" name="raum" required><option value="">Bitte wählen</option>{raeume.map((r) => <option>{r}</option>)}</select></div>
+        <div><label for="text">Was ist nicht erledigt?</label>
+          <textarea id="text" name="text" required maxlength="500"></textarea></div>
+        <button class="btn btn-primary" type="submit">Melden</button>
+      </form>
+    </section>
+    <section class="panel">
+      <h2 class="panel-h">Meldungen</h2>
+      <ul class="ticket-list">
+        {nacharbeiten.map((n) => (
+          <li class={n.status === 'erledigt' ? 'done' : ''}>
+            <div class="ticket-top"><strong>{n.raum}</strong><span class={`tag ${n.status === 'erledigt' ? 'tag-ok' : n.status === 'offen' ? 'tag-warn' : ''}`}>{n.status}</span></div>
+            <p>{n.text}</p>
+            <div class="ticket-foot">
+              <span class="muted">{n.datum}, gemeldet von {n.von}</span>
+              <form method="post"><input type="hidden" name="aktion" value="status" /><input type="hidden" name="id" value={n.id} />
+                <button class="link-btn" type="submit">{n.status === 'erledigt' ? 'Wieder öffnen' : 'Als erledigt bestätigen'}</button></form>
+            </div>
+          </li>
+        ))}
+      </ul>
+    </section>
+  </div>
+</Kunde>

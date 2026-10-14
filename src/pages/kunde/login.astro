@@ -1,0 +1,44 @@
+---
+import Base from '../../layouts/Base.astro';
+import { checkLogin, COOKIE, cookieOpts, demoLogin, isSecure, sessionCookie, validSession } from '../../lib/kunde.ts';
+
+export const prerender = false;
+Astro.response.headers.set('Cache-Control', 'no-store');
+Astro.response.headers.set('X-Robots-Tag', 'noindex, nofollow');
+
+const w = Astro.url.searchParams.get('weiter') ?? '';
+const weiter = w.startsWith('/kunde') && !w.startsWith('/kunde/login') ? w : '/kunde';
+if (validSession(Astro.cookies.get(COOKIE)?.value)) return Astro.redirect(weiter, 303);
+
+let fehler = false;
+let user = '';
+if (Astro.request.method === 'POST') {
+  const f = await Astro.request.formData();
+  user = String(f.get('user') ?? '').trim().slice(0, 80);
+  if (checkLogin(user, String(f.get('passwort') ?? ''))) {
+    Astro.cookies.set(COOKIE, sessionCookie(), cookieOpts(isSecure(Astro)));
+    return Astro.redirect(weiter, 303);
+  }
+  fehler = true;
+  Astro.response.status = 401;
+}
+---
+<Base title="Anmelden">
+  <section class="section section-soft">
+    <div class="wrap login-wrap">
+      <h1>Anmelden</h1>
+      <p>Im Kundenbereich verwalten Sie Ihre Objekte, Ausschreibungen, Leistungsnachweise und Nacharbeiten.</p>
+      <form class="form-card" method="post">
+        {fehler && <div class="form-errors show" role="alert">Benutzername oder Passwort stimmen nicht.</div>}
+        <label for="user">Benutzername</label>
+        <input id="user" name="user" type="text" autocomplete="username" required value={user} />
+        <label for="passwort">Passwort</label>
+        <input id="passwort" name="passwort" type="password" autocomplete="current-password" required />
+        <button class="btn btn-primary btn-block" type="submit">Anmelden</button>
+        {demoLogin()
+          ? <p class="form-note">Demo-Zugang: Benutzername <strong>test</strong>, Passwort <strong>test1234</strong></p>
+          : <p class="form-note">Der Kundenbereich ist noch nicht freigeschaltet.</p>}
+      </form>
+    </div>
+  </section>
+</Base>

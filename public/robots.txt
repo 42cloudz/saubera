@@ -1,5 +1,6 @@
 User-agent: *
 Disallow: /admin
 Disallow: /api/
+Disallow: /kunde
 
 Sitemap: https://saubera.42cloudz.com/sitemap-index.xml

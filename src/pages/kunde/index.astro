@@ -1,0 +1,46 @@
+---
+import Kunde from '../../layouts/Kunde.astro';
+import { requireKunde } from '../../lib/kunde.ts';
+import { ausschreibungen, einsaetze, eur, geplant, monatlich, nacharbeiten, objekt, vertrag } from '../../data/kunde-demo.ts';
+
+export const prerender = false;
+const denied = requireKunde(Astro);
+if (denied) return denied;
+
+const offen = nacharbeiten.filter((n) => n.status !== 'erledigt');
+const soll = einsaetze.length * geplant;
+const ist = einsaetze.reduce((s, e) => s + Math.min(e.erledigt, geplant), 0);
+const quote = Math.round((ist / soll) * 100);
+const laufend = ausschreibungen.filter((a) => !a.angenommen);
+---
+<Kunde title="Übersicht">
+  <h1 class="portal-h1">Übersicht</h1>
+  <div class="kpis">
+    <a class="kpi" href="/kunde/nachweise"><span class="kpi-label">Nächster Einsatz</span><strong>Mi 14.10.</strong><span>ab 18:00 Uhr, {objekt.name}</span></a>
+    <a class="kpi" href="/kunde/nachweise"><span class="kpi-label">Erledigt laut Nachweis</span><strong>{quote} %</strong><span>der geplanten Positionen, letzte {einsaetze.length} Einsätze</span></a>
+    <a class={`kpi${offen.length ? ' kpi-warn' : ''}`} href="/kunde/nacharbeiten"><span class="kpi-label">Offene Nacharbeiten</span><strong>{offen.length}</strong><span>{offen[0] ? `zuletzt: ${offen[0].raum}` : 'alles erledigt'}</span></a>
+    <a class="kpi" href="/kunde/ausschreibungen"><span class="kpi-label">Laufende Ausschreibungen</span><strong>{laufend.length}</strong><span>{laufend[0] ? `${laufend[0].angebote.length} Angebote für ${laufend[0].objekt}` : 'keine'}</span></a>
+  </div>
+
+  <div class="portal-cols">
+    <section class="panel">
+      <h2 class="panel-h">Letzte Einsätze</h2>
+      <ul class="feed-list">
+        {einsaetze.slice(0, 4).map((e) => (
+          <li><span class="num">{e.datum}</span> {e.team}: {e.fehlend.length ? <span class="warn">{e.fehlend.join(', ')} nicht erledigt</span> : 'alles erledigt'}</li>
+        ))}
+      </ul>
+      <a class="link-strong" href="/kunde/nachweise">Alle Nachweise</a>
+    </section>
+    <section class="panel">
+      <h2 class="panel-h">Vertrag</h2>
+      <dl class="kv">
+        <dt>Reinigungsfirma</dt><dd>{vertrag.firma}</dd>
+        <dt>Objekt</dt><dd>{objekt.name}</dd>
+        <dt>Monatlich netto</dt><dd>{eur(monatlich())}</dd>
+        <dt>Kündigung</dt><dd>{vertrag.kuendigung}</dd>
+      </dl>
+      <a class="link-strong" href="/kunde/vertrag">Vertrag und Anbieterwechsel</a>
+    </section>
+  </div>
+</Kunde>

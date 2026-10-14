@@ -1,0 +1,39 @@
+---
+import Kunde from '../../layouts/Kunde.astro';
+import { requireKunde } from '../../lib/kunde.ts';
+import { einsaetze, objekt, vertrag } from '../../data/kunde-demo.ts';
+
+export const prerender = false;
+const denied = requireKunde(Astro);
+if (denied) return denied;
+
+const taeglich = objekt.positionen.filter((p) => /täglich|Woche/.test(p.turnus)).map((p) => `${p.nr} ${p.bereich}`);
+---
+<Kunde title="Leistungsnachweise">
+  <h1 class="portal-h1">Leistungsnachweise</h1>
+  <p class="portal-lead">Das Team von {vertrag.firma} hakt nach jedem Einsatz die Positionen aus dem Leistungsverzeichnis ab.</p>
+  <section class="panel">
+    <h2 class="panel-h">{objekt.name}</h2>
+    <ul class="proof-list">
+      {einsaetze.map((e) => {
+        const done = taeglich.filter((t) => !e.fehlend.includes(t));
+        return (
+          <li>
+            <details>
+              <summary>
+                <span class="num">{e.datum}</span>
+                <span>{e.zeit}</span>
+                <span class="muted">{e.team}</span>
+                {e.fehlend.length ? <span class="tag tag-warn">{e.fehlend.length} offen</span> : <span class="tag tag-ok">Vollständig</span>}
+              </summary>
+              <ul class="check-list">
+                {done.map((t) => <li class="ok">{t}</li>)}
+                {e.fehlend.map((t) => <li class="miss">{t}: nicht erledigt, Nacharbeit angelegt</li>)}
+              </ul>
+            </details>
+          </li>
+        );
+      })}
+    </ul>
+  </section>
+</Kunde>

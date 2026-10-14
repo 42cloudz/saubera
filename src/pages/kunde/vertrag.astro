@@ -1,0 +1,47 @@
+---
+import Kunde from '../../layouts/Kunde.astro';
+import { requireKunde } from '../../lib/kunde.ts';
+import { slugify } from '../../data/orte.ts';
+import { ausschreibungen, eur, monatlich, objekt, vertrag } from '../../data/kunde-demo.ts';
+
+export const prerender = false;
+const denied = requireKunde(Astro);
+if (denied) return denied;
+
+const id = 'A-2026-10-0012';
+if (Astro.request.method === 'POST') {
+  if (!ausschreibungen.some((a) => a.id === id)) {
+    ausschreibungen.unshift({
+      id, titel: `Neuausschreibung ${objekt.name}`, objekt: objekt.name, status: 'Veröffentlicht', frist: '06.11.2026',
+      positionen: objekt.positionen.map((p) => ({ nr: p.nr, bereich: p.bereich, menge: p.menge, turnus: p.turnus })),
+      angebote: [], angenommen: null,
+    });
+  }
+  return Astro.redirect(`/kunde/ausschreibungen#${id}`, 303);
+}
+const laeuft = ausschreibungen.some((a) => a.id === id);
+---
+<Kunde title="Vertrag">
+  <h1 class="portal-h1">Vertrag und Anbieter</h1>
+  <section class="panel">
+    <div class="panel-top">
+      <h2 class="panel-h">{objekt.name}</h2>
+      <a class="btn btn-ghost btn-s" href={`/firmen/${slugify(vertrag.firma)}`}>Firmenprofil</a>
+    </div>
+    <dl class="kv">
+      <dt>Reinigungsfirma</dt><dd>{vertrag.firma}</dd>
+      <dt>Ansprechpartner</dt><dd>{vertrag.ansprechpartner}, {vertrag.telefon}</dd>
+      <dt>Vertragsbeginn</dt><dd>{vertrag.beginn}</dd>
+      <dt>Laufzeit</dt><dd>{vertrag.laufzeit}</dd>
+      <dt>Kündigungsfrist</dt><dd>{vertrag.kuendigung}</dd>
+      <dt>Monatlich netto</dt><dd>{eur(monatlich())} für {objekt.positionen.length} Positionen</dd>
+    </dl>
+  </section>
+  <section class="panel" id="wechsel">
+    <h2 class="panel-h">Anbieter wechseln</h2>
+    <p>Ihr Leistungsverzeichnis liegt bei Saubera. Für einen Wechsel schreiben Sie es mit einem Klick neu aus, andere Firmen kalkulieren auf dieselben Positionen. Ihr laufender Vertrag bleibt davon unberührt, bis Sie kündigen.</p>
+    {laeuft
+      ? <p class="notice">Die Neuausschreibung läuft. <a href={`/kunde/ausschreibungen#${id}`}>Zur Ausschreibung</a></p>
+      : <form method="post"><button class="btn btn-primary" type="submit">Leistungsverzeichnis neu ausschreiben</button></form>}
+  </section>
+</Kunde>

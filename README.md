@@ -18,4 +18,6 @@ Das B2B-Portal für Gebäude- und Objektreinigung: Unternehmen beschreiben ihr O
 | `SMTP_URL`, `NOTIFY_EMAIL`, `MAIL_FROM` | Mail bei jedem Eingang, optional |
 | `NOINDEX=1` | `X-Robots-Tag: noindex` für Testdomains |
 | `SEED_DEMO=1` | Legt erfundene, als „Beispiel“ markierte Firmen im Verzeichnis an (nur Test) |
+| `DEMO_LOGIN=1` | Schaltet den Demo-Kundenbereich unter `/kunde` frei, Login `test` / `test1234` (nur Test) |
+| `SESSION_SECRET` | Optional: Schlüssel für das Login-Cookie. Ohne ihn gilt ein Zufallswert, nach Neustart ist man abgemeldet |
 | `SITE_URL` | Basis-URL für Canonical und Sitemap (Build-Zeit) |
