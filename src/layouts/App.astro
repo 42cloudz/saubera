@@ -1,0 +1,72 @@
+---
+// App shell shared by the customer area and the admin area: own top bar and a collapsible
+// navigation pane on the left. The pane state lives in a cookie per area, so the server renders
+// it right and nothing jumps.
+import '../styles/global.css';
+import Icon from '../components/Icon.astro';
+import Logo from '../components/Logo.astro';
+
+export interface NavItem { href: string; label: string; icon: string; current?: boolean; count?: number }
+interface Props {
+  title: string;
+  area: 'kunde' | 'admin';
+  nav: NavItem[];
+  user: { name: string; sub: string };
+  badge: string;
+  home: string;
+  note?: string;
+  logout?: boolean;
+}
+const { title, area, nav, user, badge, home, note, logout = false } = Astro.props;
+const collapsed = Astro.cookies.get(`sb_pane_${area}`)?.value === 'c';
+const initials = user.name.split(' ').map((w) => w[0]).join('').slice(0, 2).toUpperCase();
+---
+<!doctype html>
+<html lang="de">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex, nofollow" />
+    <title>{title} | Saubera {area === 'admin' ? 'Admin' : 'Kundenbereich'}</title>
+    <link rel="icon" href="/favicon.ico" sizes="any" />
+    <link rel="icon" href="/favicon-32.png" type="image/png" sizes="32x32" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <meta name="theme-color" content="#f5f8f7" />
+  </head>
+  <body class="app-body">
+    <a class="skip" href="#inhalt">Zum Inhalt springen</a>
+    <header class="app-bar">
+      <button class="pane-toggle" type="button" aria-controls="pane" aria-expanded={collapsed ? 'false' : 'true'} aria-label="Navigation ein- oder ausklappen"><Icon name="menu" /></button>
+      <a class="logo app-logo" href={home}><Logo />saubera</a>
+      <span class="app-demo">{badge}</span>
+      <div class="app-user">
+        <span class="avatar" aria-hidden="true">{initials}</span>
+        <span class="app-user-text"><strong>{user.name}</strong><span>{user.sub}</span></span>
+      </div>
+    </header>
+    <div class={`app${collapsed ? ' is-collapsed' : ''}`} data-area={area}>
+      <aside class="pane" id="pane">
+        <nav aria-label="Bereichsnavigation">
+          {nav.map((n) => (
+            <a href={n.href} aria-current={n.current ? 'page' : undefined} title={n.label}>
+              <Icon name={n.icon} /><span>{n.label}</span>
+              {n.count !== undefined && n.count > 0 && <b class="pane-count">{n.count}</b>}
+            </a>
+          ))}
+        </nav>
+        <div class="pane-foot">
+          <a href="/" title="Zur Website"><Icon name="external" /><span>Zur Website</span></a>
+          {logout && <form method="post" action="/kunde/logout"><button type="submit" title="Abmelden"><Icon name="logout" /><span>Abmelden</span></button></form>}
+        </div>
+      </aside>
+      <div class="pane-backdrop" hidden></div>
+      <main class="app-main" id="inhalt">
+        {note && <p class="app-note">{note}</p>}
+        <slot />
+      </main>
+    </div>
+    <script>
+      import '../scripts/app-pane.ts';
+    </script>
+  </body>
+</html>

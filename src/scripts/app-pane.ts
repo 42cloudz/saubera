@@ -1,4 +1,4 @@
-// Collapsible navigation pane of the customer area. Wide screens: the pane shrinks to an icon rail
+// Collapsible navigation pane of the customer and admin areas. Wide screens: the pane shrinks to an icon rail
 // and the choice is kept in a cookie. Small screens: the pane slides in over the page.
 const app = document.querySelector<HTMLElement>('.app');
 const toggle = document.querySelector<HTMLButtonElement>('.pane-toggle');
@@ -19,7 +19,8 @@ toggle?.addEventListener('click', () => {
   }
   const collapsed = app.classList.toggle('is-collapsed');
   toggle.setAttribute('aria-expanded', String(!collapsed));
-  document.cookie = `sb_pane=${collapsed ? 'c' : 'o'}; path=/kunde; max-age=31536000; samesite=lax`;
+  const area = app.dataset.area ?? 'kunde';
+  document.cookie = `sb_pane_${area}=${collapsed ? 'c' : 'o'}; path=/${area}; max-age=31536000; samesite=lax`;
 });
 backdrop?.addEventListener('click', () => setOpen(false));
 document.addEventListener('keydown', (e) => { if (e.key === 'Escape') setOpen(false); });

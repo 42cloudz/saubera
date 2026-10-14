@@ -278,7 +278,6 @@ input:focus, select:focus, textarea:focus { outline: none; background: var(--sig
 .ad-slot p { margin: 4px 0 0; color: var(--ink-2); }
 
 /* Admin */
-.admin h1 { font-size: 3rem; }
 .admin table { width: 100%; border-collapse: collapse; font-size: 0.88rem; border-top: 1px solid var(--line); }
 .admin th, .admin td { text-align: left; vertical-align: top; padding: 10px 8px; border-bottom: 1px solid var(--line); }
 .admin th { background: var(--mist); font-family: var(--mono); font-weight: 500; font-size: 0.75rem; position: sticky; top: 70px; }
@@ -286,7 +285,6 @@ input:focus, select:focus, textarea:focus { outline: none; background: var(--sig
 .admin .btn { min-height: 34px; padding: 4px 12px; font-size: 0.95rem; }
 .admin .matches { font-size: 0.82rem; color: var(--ink-2); }
 .admin .badge { display: inline-block; font-family: var(--mono); font-size: 0.7rem; padding: 2px 6px; background: var(--signal); color: var(--ink); }
-.admin-tabs { display: flex; gap: 10px; margin-bottom: 22px; flex-wrap: wrap; }
 
 /* Spacing helpers (no inline styles: the CSP allows only this stylesheet). */
 .mt-m { margin-top: 28px; }
@@ -845,3 +843,19 @@ fieldset { border-top: 1px solid var(--line); }
 .hero-points a { color: var(--accent-dark); font-weight: 600; text-decoration: none; }
 @media (max-width: 1000px) { .branchen { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 @media (max-width: 520px) { .branchen { grid-template-columns: minmax(0, 1fr); } }
+
+/* Admin im App-Rahmen */
+.pane-count { margin-left: auto; min-width: 22px; padding: 2px 7px; border-radius: 999px; background: var(--accent); color: #fff; font-size: .72rem; font-weight: 700; text-align: center; }
+.app.is-collapsed .pane-count { position: absolute; top: 4px; left: 32px; min-width: 16px; padding: 1px 4px; font-size: .62rem; }
+.admin-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 16px; }
+.admin-head h1 { margin: 0; }
+.panel-flush { padding: 0; overflow: hidden; }
+.panel-flush .table-scroll { border-radius: 0; }
+.admin table { border-top: 0; font-size: .88rem; }
+.admin th { position: sticky; top: 0; background: #fafcfb; color: var(--muted); padding: 12px 10px; border-bottom: 1px solid var(--line); }
+.admin td { padding: 12px 10px; }
+.admin tbody tr:hover td { background: #fafcfb; }
+.admin td form { display: flex; gap: 6px; align-items: center; margin-bottom: 6px; }
+.admin select { min-height: 34px; padding: 4px 8px; border-radius: 6px; }
+.admin .btn { min-height: 34px; padding: 4px 12px; font-size: .85rem; }
+.admin .badge { border-radius: 999px; padding: 2px 8px; font-family: var(--body); font-weight: 600; background: var(--accent-soft); color: var(--accent-dark); margin-left: 4px; }
