@@ -18,7 +18,7 @@ const anfrage = leistung ? `/anfrage?leistung=${leistung}` : '/anfrage';
   <div class="empty">
     <p class="empty-title">Noch keine passende Firma im Verzeichnis{wo ? ` für ${wo}` : ''}.</p>
     <p>Schicken Sie uns Ihre Anfrage trotzdem. Wir suchen passende Betriebe für Sie heraus, auch außerhalb des Verzeichnisses.</p>
-    <a class="btn btn-primary" href={anfrage}>Angebote anfragen</a>
+    <a class="btn btn-primary" href={anfrage}>Angebot anfordern</a>
   </div>
 ) : (
   <ul class="results">
@@ -41,7 +41,7 @@ const anfrage = leistung ? `/anfrage?leistung=${leistung}` : '/anfrage';
             </ul>
           </div>
           <div class="result-actions">
-            <a class="btn btn-primary btn-s" href={`/anfrage?firmen=${f.slug}${leistung ? `&leistung=${leistung}` : ''}`}>Angebot anfragen</a>
+            <a class="btn btn-primary btn-s" href={`/anfrage?firmen=${f.slug}${leistung ? `&leistung=${leistung}` : ''}`}>Angebot anfordern</a>
             {f.premium && <a class="btn btn-ghost btn-s" href={`/firmen/${f.slug}#rueckruf`}>Rückruf</a>}
             <button type="button" class="merk" data-merk={f.slug} aria-pressed="false" title="Auf die Merkliste">
               <svg viewBox="0 0 16 16" width="22" height="22" aria-hidden="true"><path d="M3.5 1.5h9v13L8 11l-4.5 3.5z" /></svg><span class="sr merk-label">Merken</span>

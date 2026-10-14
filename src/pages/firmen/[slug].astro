@@ -78,7 +78,7 @@ const ld = {
       <div class="contact-card">
         <p class="contact-title">Angebot von {f.firma.replace(/\s*\(Beispiel\)/, '')}</p>
         <p class="contact-text">Beschreiben Sie Ihr Objekt einmal, die Firma kalkuliert auf Ihr Leistungsverzeichnis. Kostenlos und unverbindlich.</p>
-        <a class="btn btn-primary btn-block" href={`/anfrage?firmen=${f.slug}`}>Angebot einholen</a>
+        <a class="btn btn-primary btn-block" href={`/anfrage?firmen=${f.slug}`}>Angebot anfordern</a>
         <div class="contact-row">
           {tel && <a class="btn btn-ghost btn-s" href={tel}>Anrufen</a>}
           <button type="button" class="btn btn-ghost btn-s merk merk-wide" data-merk={f.slug} aria-pressed="false">
@@ -103,7 +103,7 @@ const ld = {
     </aside>
   </div>
   <div class="mobile-cta">
-    <a class="btn btn-primary" href={`/anfrage?firmen=${f.slug}`}>Angebot einholen</a>
+    <a class="btn btn-primary" href={`/anfrage?firmen=${f.slug}`}>Angebot anfordern</a>
     {tel ? <a class="btn btn-ghost" href={tel}>Anrufen</a> : f.premium && <a class="btn btn-ghost" href="#rueckruf">Rückruf</a>}
   </div>
 </Base>

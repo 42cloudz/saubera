@@ -57,7 +57,7 @@ const orgLd = {
         <nav class="nav" id="nav" aria-label="Hauptnavigation">
           {nav.map((n) => <a href={n.href} aria-current={path.startsWith(n.href) ? 'page' : undefined}>{n.label}</a>)}
           <a class="nav-merk" href="/merkliste" aria-current={path === '/merkliste' ? 'page' : undefined}>Merkliste <span class="merk-count" data-merk-count hidden>0</span></a>
-          <a class="btn btn-primary" href="/anfrage">Angebote anfragen</a>
+          <a class="btn btn-primary" href="/anfrage">Angebot anfordern</a>
         </nav>
       </div>
     </header>
@@ -79,7 +79,7 @@ const orgLd = {
             <h4>Saubera</h4>
             <ul>
               <li><a href="/unternehmen">So funktioniert's</a></li>
-              <li><a href="/anfrage">Angebote anfragen</a></li>
+              <li><a href="/anfrage">Angebot anfordern</a></li>
               <li><a href="/ueber-uns">Über uns</a></li>
               <li><a href="/leistungen">Alle Leistungen</a></li>
             </ul>

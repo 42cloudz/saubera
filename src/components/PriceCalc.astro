@@ -37,8 +37,8 @@ const daten = Object.fromEntries(leistungen.map((x) => [x.slug, { preis: x.preis
   {Astro.props.ort && <input type="hidden" name="ort" value={Astro.props.ort} />}
   <div class="calc-result">
     <p><span class="calc-label">Richtpreis netto</span> <output id="calc-out" for="calc-leistung calc-menge calc-turnus">{start ? spanneText(start) : '–'}</output></p>
-    <button class="btn btn-primary" type="submit">Echte Angebote dazu anfordern</button>
+    <button class="btn btn-primary" type="submit">Angebot anfordern</button>
   </div>
-  <p class="calc-note">Grobe Marktwerte 2026 ohne Gewähr. Den echten Preis kalkulieren die Reinigungsfirmen nach Ihrem Leistungsverzeichnis.</p>
+  <p class="calc-note">Grobe Marktwerte 2026 ohne Gewähr. Den genauen Preis kalkulieren die Reinigungsfirmen nach Ihrem Leistungsverzeichnis.</p>
 </form>
 <script>import '../scripts/preisrechner.ts';</script>
