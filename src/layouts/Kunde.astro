@@ -1,33 +1,69 @@
 ---
-// Shell of the customer area: Base plus a side navigation. Every page under /kunde uses it.
-import Base from './Base.astro';
+// App shell of the customer area: own top bar and a collapsible navigation pane on the left.
+// The pane state lives in the cookie sb_pane, so the server renders it right and nothing jumps.
+import '../styles/global.css';
+import Icon from '../components/Icon.astro';
+import Logo from '../components/Logo.astro';
 import { kunde } from '../data/kunde-demo.ts';
 
 interface Props { title: string }
 const { title } = Astro.props;
 const path = Astro.url.pathname.replace(/\/$/, '');
+const collapsed = Astro.cookies.get('sb_pane')?.value === 'c';
 const nav = [
-  { href: '/kunde', label: 'Übersicht' },
-  { href: '/kunde/objekte', label: 'Leistungsverzeichnis' },
-  { href: '/kunde/ausschreibungen', label: 'Ausschreibungen' },
-  { href: '/kunde/nachweise', label: 'Leistungsnachweise' },
-  { href: '/kunde/nacharbeiten', label: 'Nacharbeiten' },
-  { href: '/kunde/vertrag', label: 'Vertrag und Anbieter' },
+  { href: '/kunde', label: 'Übersicht', icon: 'home' },
+  { href: '/kunde/objekte', label: 'Leistungsverzeichnis', icon: 'list' },
+  { href: '/kunde/ausschreibungen', label: 'Ausschreibungen', icon: 'scale' },
+  { href: '/kunde/nachweise', label: 'Leistungsnachweise', icon: 'clipboard' },
+  { href: '/kunde/nacharbeiten', label: 'Nacharbeiten', icon: 'flag' },
+  { href: '/kunde/vertrag', label: 'Vertrag und Anbieter', icon: 'receipt' },
 ];
 const active = (h: string) => (h === '/kunde' ? path === '/kunde' : path.startsWith(h));
+const initials = kunde.name.split(' ').map((w) => w[0]).join('').slice(0, 2);
 ---
-<Base title={title}>
-  <div class="demo-bar">Demo-Kundenbereich mit Beispieldaten. Änderungen werden nicht dauerhaft gespeichert.</div>
-  <div class="portal wrap">
-    <aside class="portal-side">
-      <p class="portal-who"><strong>{kunde.firma}</strong><span>{kunde.name}</span></p>
-      <nav aria-label="Kundenbereich">
-        {nav.map((n) => <a href={n.href} aria-current={active(n.href) ? 'page' : undefined}>{n.label}</a>)}
-      </nav>
-      <form method="post" action="/kunde/logout"><button class="portal-logout" type="submit">Abmelden</button></form>
-    </aside>
-    <div class="portal-main">
-      <slot />
+<!doctype html>
+<html lang="de">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex, nofollow" />
+    <title>{title} | Saubera Kundenbereich</title>
+    <link rel="icon" href="/favicon.ico" sizes="any" />
+    <link rel="icon" href="/favicon-32.png" type="image/png" sizes="32x32" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <meta name="theme-color" content="#f5f8f7" />
+  </head>
+  <body class="app-body">
+    <a class="skip" href="#inhalt">Zum Inhalt springen</a>
+    <header class="app-bar">
+      <button class="pane-toggle" type="button" aria-controls="pane" aria-expanded={collapsed ? 'false' : 'true'} aria-label="Navigation ein- oder ausklappen"><Icon name="menu" /></button>
+      <a class="logo app-logo" href="/kunde"><Logo />saubera</a>
+      <span class="app-demo">Demo</span>
+      <div class="app-user">
+        <span class="avatar" aria-hidden="true">{initials}</span>
+        <span class="app-user-text"><strong>{kunde.name}</strong><span>{kunde.firma}</span></span>
+      </div>
+    </header>
+    <div class={`app${collapsed ? ' is-collapsed' : ''}`}>
+      <aside class="pane" id="pane">
+        <nav aria-label="Kundenbereich">
+          {nav.map((n) => (
+            <a href={n.href} aria-current={active(n.href) ? 'page' : undefined} title={n.label}><Icon name={n.icon} /><span>{n.label}</span></a>
+          ))}
+        </nav>
+        <div class="pane-foot">
+          <a href="/" title="Zur Website"><Icon name="external" /><span>Zur Website</span></a>
+          <form method="post" action="/kunde/logout"><button type="submit" title="Abmelden"><Icon name="logout" /><span>Abmelden</span></button></form>
+        </div>
+      </aside>
+      <div class="pane-backdrop" hidden></div>
+      <main class="app-main" id="inhalt">
+        <p class="app-note">Demo mit Beispieldaten. Änderungen werden nicht dauerhaft gespeichert.</p>
+        <slot />
+      </main>
     </div>
-  </div>
-</Base>
+    <script>
+      import '../scripts/kunde-pane.ts';
+    </script>
+  </body>
+</html>

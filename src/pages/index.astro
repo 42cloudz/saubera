@@ -6,19 +6,24 @@ import PriceTable from '../components/PriceTable.astro';
 <Base title="Saubera">
   <section class="hero">
     <div class="wrap">
-      <h1>Was kostet die Reinigung Ihrer Firma?</h1>
-      <p class="lead">Rechnen Sie es hier grob aus. Danach holen wir Angebote geprüfter Reinigungsfirmen für Sie ein, kostenlos.</p>
+      <div class="hero-split">
+        <div>
+          <h1>Was kostet die Reinigung Ihrer Firma?</h1>
+          <p class="lead">Rechnen Sie es hier grob aus. Danach holen wir Angebote geprüfter Reinigungsfirmen für Sie ein, kostenlos.</p>
+          <ul class="hero-points">
+            <li>Nur für Unternehmen, Praxen, Handel, Industrie und Hausverwaltungen</li>
+            <li>Für Auftraggeber kostenlos</li>
+            <li>Reinigungsfirmen zahlen keine Lead-Gebühr</li>
+          </ul>
+        </div>
+        <picture class="hero-photo">
+          <source type="image/webp" srcset="/img/fassade-960.webp 960w, /img/fassade-1680.webp 1680w" sizes="(max-width: 960px) 100vw, 560px" />
+          <img src="/img/fassade-960.jpg" srcset="/img/fassade-960.jpg 960w, /img/fassade-1680.jpg 1680w" sizes="(max-width: 960px) 100vw, 560px" width="1680" height="1120" alt="Fassadenreiniger in Seilsicherung an einer gewölbten Glasfassade" fetchpriority="high" />
+        </picture>
+      </div>
       <PriceCalc />
-      <p class="hero-facts">Nur für Unternehmen, Praxen, Handel, Industrie und Hausverwaltungen <span aria-hidden="true">/</span> Für Auftraggeber kostenlos <span aria-hidden="true">/</span> Reinigungsfirmen zahlen keine Lead-Gebühr</p>
     </div>
   </section>
-
-  <figure class="photo-band">
-    <picture>
-      <source type="image/webp" srcset="/img/fassade-960.webp 960w, /img/fassade-1680.webp 1680w" sizes="100vw" />
-      <img src="/img/fassade-1680.jpg" srcset="/img/fassade-960.jpg 960w, /img/fassade-1680.jpg 1680w" sizes="100vw" width="1680" height="1120" alt="Fassadenreiniger in Seilsicherung an einer gewölbten Glasfassade" loading="lazy" decoding="async" />
-    </picture>
-  </figure>
 
   <section class="section">
     <div class="wrap">
