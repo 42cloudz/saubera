@@ -551,3 +551,7 @@ section[id] { scroll-margin-top: 64px; }
 }
 
 .operator-img { display: block; max-width: 100%; height: auto; margin: 0 0 12px; }
+
+/* Foto von saubera.de: breites Band unter dem Hero, Ausschnitt auf die Kletterer. */
+.photo-band { margin: 0; background: var(--ink); }
+.photo-band img { display: block; width: 100%; height: clamp(240px, 34vw, 460px); object-fit: cover; object-position: 50% 68%; }
