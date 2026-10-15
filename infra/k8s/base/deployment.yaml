@@ -5,7 +5,7 @@ metadata:
   labels:
     app: web
 spec:
-  # SQLite on a ReadWriteOnce volume: exactly one pod, and Recreate so a rollout never runs two.
+  # SQLite in the pod: exactly one pod, and Recreate so a rollout never runs two.
   replicas: 1
   strategy:
     type: Recreate
@@ -73,8 +73,9 @@ spec:
             - name: tmp
               mountPath: /tmp
       volumes:
+        # No volume for now (costs, Markus 2026-10-15): SQLite lives in the pod and is empty again
+        # after every restart or deploy. Later the data moves to Markus' MongoDB.
         - name: data
-          persistentVolumeClaim:
-            claimName: saubera-data
+          emptyDir: {}
         - name: tmp
           emptyDir: {}

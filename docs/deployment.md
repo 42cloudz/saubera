@@ -13,7 +13,7 @@ GitHub main ──(Action: mirror-to-gitlab.yml)──▶ GitLab 42cloudz/sauber
 Argo CD (k3s) ◀── beobachtet Branch `deploy`, Pfad infra/k8s/overlays/test  →  saubera.42cloudz.com
 ```
 
-Ein Container (Node 24): Astro rendert die Seiten beim Build vor, `server.mjs` liefert sie aus, nimmt die Formulare an und setzt die Sicherheits-Header. Anfragen und Registrierungen liegen in SQLite unter `/data` (PersistentVolumeClaim `saubera-data`). Deshalb läuft genau ein Pod mit `Recreate`.
+Ein Container (Node 24): Astro rendert die Seiten beim Build vor, `server.mjs` liefert sie aus, nimmt die Formulare an und setzt die Sicherheits-Header. Anfragen und Registrierungen liegen in SQLite unter `/data`. Vorerst ohne Volume (emptyDir): Nach jedem Neustart oder Deploy ist die Datenbank leer. Später sollen die Daten in Markus' MongoDB. Es läuft genau ein Pod mit `Recreate`.
 
 ## Einmalige Einrichtung
 
